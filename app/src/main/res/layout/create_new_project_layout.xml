@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/smar_textview_createnewproject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create a new project"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="20dp"
+        android:textSize="20sp"/>
+
+
+    <TextView
+    android:id="@+id/smar_textview_projectname"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/smar_textview_createnewproject"
+    android:layout_marginTop="40dp"
+    android:layout_marginStart="20dp"
+    android:text="Project Name"
+    android:textSize="12sp"/>
+    <EditText
+        android:id="@+id/smar_edittext_projectname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/smar_textview_projectname"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:background="@drawable/edittext_border"
+        />
+    <TextView
+        android:id="@+id/smar_textview_clientname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/smar_edittext_projectname"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="20dp"
+        android:text="Client Name"
+        android:textSize="12sp"/>
+    <EditText
+        android:id="@+id/smar_edittext_clientname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/smar_textview_clientname"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:background="@drawable/edittext_border"
+        />
+
+    <TextView
+        android:id="@+id/smar_textview_phonenumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/smar_edittext_clientname"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="20dp"
+        android:text="Phone Number"
+        android:textSize="12sp"/>
+    <EditText
+        android:id="@+id/smar_edittext_phonenumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/smar_textview_phonenumber"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        style="@style/Widget.AppCompat.EditText"
+        android:digits="0123456789"
+        android:maxLength="10"
+        android:layout_marginTop="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:background="@drawable/edittext_border"
+        />
+
+    <Button
+        android:id="@+id/smar_button_newprojectnext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/smar_edittext_phonenumber"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:cornerRadius="20dp"
+        android:text="Next"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:background="@drawable/round_button"
+        />
+</RelativeLayout>
