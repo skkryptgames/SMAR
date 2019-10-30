@@ -105,13 +105,13 @@ public class NewProjectSelectModulesFragment extends Fragment {
             final ModulesPojo modulesPojo = detailsList.get(position);
             holder.moduleName.setText(detailsList.get(position).getName());
             holder.moduleImage.setImageResource(detailsList.get(position).getImage());
-            holder.radioButtonImage.setForeground(modulesPojo.isSelected() ? getResources().getDrawable(R.drawable.ic_ellipse_45) : null);
+            holder.radioButtonImage.setForeground(modulesPojo.isSelected() ? getResources().getDrawable(R.drawable.ic_ellipse_45) : getResources().getDrawable(R.drawable.ic_panorama_fish_eye_black_24dp));
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     modulesPojo.setSelected(!modulesPojo.isSelected());
-                    holder.radioButtonImage.setForeground(modulesPojo.isSelected() ? getResources().getDrawable(R.drawable.ic_ellipse_45) : null);
+                    holder.radioButtonImage.setForeground(modulesPojo.isSelected() ? getResources().getDrawable(R.drawable.ic_ellipse_45) : getResources().getDrawable(R.drawable.ic_panorama_fish_eye_black_24dp));
 
                 }
             });

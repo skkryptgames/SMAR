@@ -19,4 +19,6 @@
     <color name="Fire">#FDA50F</color>
     <color name="Gold">#F9A602</color>
     <color name="orange">#FF9100</color>
+    <color name="black">#000000</color>
+    <color name="onyx">#1B1C20</color>
 </resources>
