@@ -10,12 +10,15 @@
         android:theme="@style/AppTheme">
 
     <activity
-        android:name=".Demo"
+        android:name=".AuthenticationActivity"
         >
     <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
     </intent-filter>
     </activity>
+
+        <activity android:name=".AdminPage"></activity>
+        <activity android:name=".ClientPage"></activity>
     </application>
 </manifest>
