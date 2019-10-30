@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "161840410972-ejhlva13msim78kflq6693fkvdqss15m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.smar",
+            "certificate_hash": "10bd2c2bb323edefc058383ecc921cc3c262a22b"
+          }
+        },
+        {
           "client_id": "161840410972-8cfebont0kor64mo92pdm35va8s0hmmr.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
