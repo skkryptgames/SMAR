@@ -65,10 +65,10 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_below="@+id/smar_textview_startdate"
-        android:background="@color/cardview_dark_background"
+        android:background="@color/gray"
         android:layout_marginTop="8dp"/>
 
-    <RadioButton
+    <ImageView
         android:id="@+id/smar_radiobutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
