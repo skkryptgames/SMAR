@@ -2,6 +2,7 @@ package com.example.smar;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -11,8 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +35,7 @@ public class NewProjectSelectModulesFragment extends Fragment {
     private ArrayList<ModulesPojo> modulesList=new ArrayList<>();
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private Button button;
+    CalendarDialogPopup calendarDialogPopup;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -60,8 +64,8 @@ public class NewProjectSelectModulesFragment extends Fragment {
 
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
         private TextView moduleName,startDate,numOfDays;
-        private ImageView moduleImage;
-        private RadioButton radioButton;
+        private ImageView moduleImage,radioButtonImage;
+
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -73,7 +77,7 @@ public class NewProjectSelectModulesFragment extends Fragment {
 
             moduleImage=itemView.findViewById(R.id.smar_imageview_moduleimage);
             moduleName=itemView.findViewById(R.id.smar_textview_modulename);
-            radioButton=itemView.findViewById(R.id.smar_radiobutton);
+            radioButtonImage=itemView.findViewById(R.id.smar_radiobutton);
             startDate=itemView.findViewById(R.id.smar_textview_startdate);
             numOfDays=itemView.findViewById(R.id.smar_textview_numofdays);
 
@@ -99,38 +103,43 @@ public class NewProjectSelectModulesFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull final RecyclerViewHolder holder, int position) {
             final ModulesPojo modulesPojo = detailsList.get(position);
-           holder.moduleName.setText(detailsList.get(position).getName());
-           holder.moduleImage.setImageResource(detailsList.get(position).getImage());
-           holder.radioButton.setChecked(modulesPojo.isSelected());
-           holder.startDate.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View view) {
-                   Calendar cal = Calendar.getInstance();
-                   int year = cal.get(Calendar.YEAR);
-                   int month = cal.get(Calendar.MONTH);
-                   int day = cal.get(Calendar.DATE);
+            holder.moduleName.setText(detailsList.get(position).getName());
+            holder.moduleImage.setImageResource(detailsList.get(position).getImage());
+            holder.radioButtonImage.setForeground(modulesPojo.isSelected() ? getResources().getDrawable(R.drawable.ic_ellipse_45) : null);
 
-                   DatePickerDialog dialog = new DatePickerDialog(context, android.R.style.Theme_Holo_Dialog_MinWidth,mDateSetListener, year, month, day);
-                   dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                   dialog.show();
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    modulesPojo.setSelected(!modulesPojo.isSelected());
+                    holder.radioButtonImage.setForeground(modulesPojo.isSelected() ? getResources().getDrawable(R.drawable.ic_ellipse_45) : null);
 
-                   mDateSetListener = new DatePickerDialog.OnDateSetListener() {
-                       @Override
-                       public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                           String a=monthFinder(month);
-                           String date = a + " " + dayOfMonth + " " +year;
-                           holder.startDate.setText(date);
-                       }
-                   };
-               }
-           });
-           holder.itemView.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View view) {
-                   holder.radioButton.setChecked(modulesPojo.isSelected());
-                   modulesPojo.setSelected(!modulesPojo.isSelected());
-               }
-           });
+                }
+            });
+
+            holder.startDate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    calendarDialogPopup=new CalendarDialogPopup();
+                    calendarDialogPopup.showNow(getFragmentManager(),"example");
+
+
+                    calendarDialogPopup.calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+                        @Override
+                        public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
+                            String month = monthFinder(i1);
+                            holder.startDate.setText(month + " " + i2 + " " + i);
+                            calendarDialogPopup.dismiss();
+
+                        }
+                    });
+
+                }
+
+
+            });
+
+
+
 
         }
 
@@ -141,14 +150,16 @@ public class NewProjectSelectModulesFragment extends Fragment {
     }
 
     public void populateList(){
-        ModulesPojo one=new ModulesPojo(R.drawable.harryw,"Design");
-        ModulesPojo two=new ModulesPojo(R.drawable.harryw,"Final Budget");
-        ModulesPojo three=new ModulesPojo(R.drawable.harryw,"Material Selection");
-        ModulesPojo four=new ModulesPojo(R.drawable.harryw,"Civil Works");
+        ModulesPojo one=new ModulesPojo(R.drawable.ic_021_house_plan,"Arm Chair");
+        ModulesPojo two=new ModulesPojo(R.drawable.ic_018_paint,"Curtains");
+        ModulesPojo three=new ModulesPojo(R.drawable.ic_020_floor,"Floor");
+        ModulesPojo four=new ModulesPojo(R.drawable.ic_023_tools,"Home Cinema");
+        ModulesPojo five=new ModulesPojo(R.drawable.ic_033_ceiling,"Stairs");
         modulesList.add(one);
         modulesList.add(two);
         modulesList.add(three);
         modulesList.add(four);
+        modulesList.add(five);
     }
     private String monthFinder(int a){
         String month;

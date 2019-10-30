@@ -6,7 +6,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/smar_recyclerview_modules"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_above="@+id/smar_button_modulesdone"/>
     <Button
         android:id="@+id/smar_button_modulesdone"
         android:layout_width="match_parent"
