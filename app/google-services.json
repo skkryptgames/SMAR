@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "161840410972",
+    "firebase_url": "https://smar-7f3aa.firebaseio.com",
+    "project_id": "smar-7f3aa",
+    "storage_bucket": "smar-7f3aa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:161840410972:android:45e2ae9956b93564491199",
+        "android_client_info": {
+          "package_name": "com.example.smar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "161840410972-8cfebont0kor64mo92pdm35va8s0hmmr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.smar",
+            "certificate_hash": "bebd27a657ab7683ddbe6f6185bb58560437185d"
+          }
+        },
+        {
+          "client_id": "161840410972-l665ufgi13ttvje9anv7se6acfjbp2tm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOziQRy7E32S9ED-fFrunL2fVUnYDAWvM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "161840410972-l665ufgi13ttvje9anv7se6acfjbp2tm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:textAlignment="center">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:id="@+id/ruler"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_023_tools"
+        android:layout_weight="1">
+
+    </ImageView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/design"
+            android:text="Design"
+            android:textSize="17dp"
+            android:textColor="@color/blue">
+
+        </TextView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/targetDate"
+            android:text="Target Date Oct 31 2019"
+            android:textSize="17dp">
+
+        </TextView>
+
+
+    </LinearLayout>
+
+
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:id="@+id/panorama"
+        android:src="@drawable/ic_panorama_fish_eye_black_24dp"
+        >
+
+    </ImageView>
+
+
+</LinearLayout>
