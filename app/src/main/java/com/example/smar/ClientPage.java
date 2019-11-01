@@ -5,7 +5,12 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -14,14 +19,27 @@ public class ClientPage extends AppCompatActivity {
     RecyclerView clientRecyclerView;
     ArrayList<Client> clientData = new ArrayList<>();
     ClientAdapter adapter;
+    ActionBar toolbar;
+    TextView toolbarTitle;
+    ImageView toolbarImage;
 
 
+    @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_page);
 
-        String a = getIntent().getStringExtra("title");
+        String title = getIntent().getStringExtra("title");
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.toolbar_layout);
+        getSupportActionBar().getCustomView();
+
+        toolbar=getActionBar();
+        toolbarTitle=findViewById(R.id.smar_toolbar_title);
+        toolbarImage=findViewById(R.id.smar_toolbar_image);
+        toolbarTitle.setText(title);
+        toolbarImage.setVisibility(View.GONE);
 
 
         clientRecyclerView = findViewById(R.id.clientRecyclerView);

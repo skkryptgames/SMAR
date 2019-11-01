@@ -11,6 +11,8 @@ import android.app.ActionBar;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -22,25 +24,32 @@ public class AdminPage extends AppCompatActivity {
     Button button;
     Toolbar toolBar;
     ActionBar toolbar;
+    TextView toolbarTitle;
+    ImageView toolbarImage;
 
 
 
 
-
+    @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_page);
 
-        toolbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+
+
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.toolbar_layout);
         getSupportActionBar().getCustomView();
 
         toolbar=getActionBar();
+        toolbarTitle=findViewById(R.id.smar_toolbar_title);
+        toolbarImage=findViewById(R.id.smar_toolbar_image);
+        toolbarImage.setVisibility(View.GONE);
 
 
 
-        /*toolBar = (Toolbar) findViewById(R.id.toolBar);
+        /*toolBar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolBar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -49,6 +58,7 @@ public class AdminPage extends AppCompatActivity {
 
 
         button= findViewById(R.id.smar_button_addproject);
+        button.setVisibility(View.VISIBLE);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override

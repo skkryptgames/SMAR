@@ -3,6 +3,7 @@ package com.example.smar;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -45,6 +46,10 @@ public class NewProjectSelectModulesFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getContext(),"new project has been created and added to the list",Toast.LENGTH_SHORT).show();
+
+                Intent intent=new Intent(getContext(),AdminPage.class);
+                startActivity(intent);
+
             }
         });
 
