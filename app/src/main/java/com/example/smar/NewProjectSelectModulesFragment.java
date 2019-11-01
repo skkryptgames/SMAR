@@ -24,6 +24,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,6 +39,7 @@ public class NewProjectSelectModulesFragment extends Fragment {
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private Button button;
     CalendarDialogPopup calendarDialogPopup;
+    String pTitle;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -49,7 +52,11 @@ public class NewProjectSelectModulesFragment extends Fragment {
 
                 Intent intent=new Intent(getContext(),AdminPage.class);
                 startActivity(intent);
-
+                ((AdminPage)getActivity()).button.setVisibility(View.VISIBLE);
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                for (int i = 0; i <= fm.getBackStackEntryCount(); i++) {
+                    fm.popBackStack();
+                }
             }
         });
 
@@ -62,6 +69,10 @@ public class NewProjectSelectModulesFragment extends Fragment {
         RecyclerView recyclerView=view.findViewById(R.id.smar_recyclerview_modules);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(new RecyclerViewAdapter(modulesList,getContext()));
+        Bundle bundle=getArguments();
+        pTitle=bundle.getString("projectTitle");
+        ((AdminPage)getActivity()).toolbarTitle.setText(pTitle);
+
 
         populateList();
         return view;

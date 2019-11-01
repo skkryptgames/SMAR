@@ -27,7 +27,19 @@ public class AdminPage extends AppCompatActivity {
     TextView toolbarTitle;
     ImageView toolbarImage;
 
+    @Override
+    public void onBackPressed() {
+        if (getFragmentManager().getBackStackEntryCount() > 0) {
 
+            button.setVisibility(View.VISIBLE);
+            finish();
+
+        } else {
+            super.onBackPressed();
+
+
+        }
+    }
 
 
     @SuppressLint("WrongConstant")
@@ -63,7 +75,8 @@ public class AdminPage extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new CreateNewProjectFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new CreateNewProjectFragment()).addToBackStack(null).commit();
+
             }
         });
 

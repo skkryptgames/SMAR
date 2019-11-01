@@ -16,10 +16,13 @@ public class NewProjectEndDateFragment extends Fragment {
 
     private CalendarView calendarView;
     private Button button;
+    Bundle bundle1;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        ((AdminPage)getActivity()).toolbarTitle.setText("Project End Date");
+        bundle1=getArguments();
         return inflater.inflate(R.layout.project_end_date_layout,container,false);
     }
 
@@ -42,6 +45,9 @@ public class NewProjectEndDateFragment extends Fragment {
                 Fragment fragment=new NewProjectSelectModulesFragment();
                 FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
                 //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
+                Bundle bundle=new Bundle();
+                bundle.putString("projectTitle",bundle1.getString("projectTitle"));
+                fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.fragment_container,fragment);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();

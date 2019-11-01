@@ -31,6 +31,7 @@ public class ClientPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_page);
 
+
         title = getIntent().getStringExtra("title");
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.toolbar_layout);
@@ -48,6 +49,7 @@ public class ClientPage extends AppCompatActivity {
                 LinearLayoutManager.VERTICAL, false);
         clientRecyclerView.setLayoutManager(mLinearLayoutManager);
 
+        clientRecyclerView.setVisibility(View.VISIBLE);
 
         clientRecyclerView.addItemDecoration(new DividerItemDecoration(ClientPage.this,
                 DividerItemDecoration.VERTICAL));
