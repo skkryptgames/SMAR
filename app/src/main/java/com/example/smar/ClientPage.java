@@ -22,6 +22,7 @@ public class ClientPage extends AppCompatActivity {
     ActionBar toolbar;
     TextView toolbarTitle;
     ImageView toolbarImage;
+    String title;
 
 
     @SuppressLint("WrongConstant")
@@ -30,7 +31,7 @@ public class ClientPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_page);
 
-        String title = getIntent().getStringExtra("title");
+        title = getIntent().getStringExtra("title");
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.toolbar_layout);
         getSupportActionBar().getCustomView();
@@ -39,7 +40,7 @@ public class ClientPage extends AppCompatActivity {
         toolbarTitle=findViewById(R.id.smar_toolbar_title);
         toolbarImage=findViewById(R.id.smar_toolbar_image);
         toolbarTitle.setText(title);
-        toolbarImage.setVisibility(View.GONE);
+        this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
 
 
         clientRecyclerView = findViewById(R.id.clientRecyclerView);

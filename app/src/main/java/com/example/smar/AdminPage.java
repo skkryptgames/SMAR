@@ -45,7 +45,7 @@ public class AdminPage extends AppCompatActivity {
         toolbar=getActionBar();
         toolbarTitle=findViewById(R.id.smar_toolbar_title);
         toolbarImage=findViewById(R.id.smar_toolbar_image);
-        toolbarImage.setVisibility(View.GONE);
+        this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
 
 
 
