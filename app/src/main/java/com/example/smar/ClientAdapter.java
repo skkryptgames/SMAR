@@ -1,6 +1,7 @@
 package com.example.smar;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -42,11 +46,30 @@ public class ClientAdapter extends RecyclerView.Adapter<ClientAdapter.ClientView
         holder.panorama.setImageResource(client.isSelected() ? R.drawable.ic_checked : R.drawable.ic_panorama_fish_eye_black_24dp);
         holder.ruler.setImageResource(titles.get(position).getImages());
 
+
         holder.panorama.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 client.setSelected(!client.isSelected());
                 holder.panorama.setImageResource(client.isSelected() ? R.drawable.ic_checked : R.drawable.ic_panorama_fish_eye_black_24dp);
+
+            }
+        });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Fragment fragment=new TaskStatusFragment();
+                FragmentTransaction fragmentTransaction=((AppCompatActivity)context).getSupportFragmentManager().beginTransaction();
+
+                Bundle bundle=new Bundle();
+                bundle.putString("moduleName",holder.design.getText().toString());
+                bundle.putString("targetDate",holder.targetDate.getText().toString());
+                fragment.setArguments(bundle);
+
+                fragmentTransaction.replace(R.id.fragment_container,fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
 
             }
         });

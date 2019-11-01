@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    >
+    android:layout_marginBottom="12dp" >
 
     <ImageView
         android:layout_width="60dp"
@@ -28,18 +27,18 @@
         android:layout_height="wrap_content"
         android:text="Start"
         android:layout_marginTop="4dp"
-        android:textSize="14sp"
+        android:textSize="12sp"
         android:layout_below="@+id/smar_textview_modulename"
-        android:layout_alignLeft="@+id/smar_textview_modulename"/>
+        android:layout_alignStart="@+id/smar_textview_modulename"/>
     <TextView
         android:id="@+id/smar_textview_startdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Oct 31 2019"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:textColor="@color/blue"
         android:layout_below="@+id/smar_textview_start"
-        android:layout_alignLeft="@+id/smar_textview_modulename"/>
+        android:layout_alignStart="@+id/smar_textview_modulename"/>
 
 
         <RelativeLayout
@@ -53,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Num of Days"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 />
             <EditText
                 android:layout_width="wrap_content"
@@ -65,7 +64,7 @@
                 android:inputType="number"
                 android:layout_below="@+id/smar_textview_numofdays"
                 android:text="4"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textColor="@color/blue"
                 />
         </RelativeLayout>
