@@ -37,7 +37,7 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
 
         holder.imageView.setImageResource(R.drawable.ic_panorama_fish_eye_black_24dp);
         holder.projectName.setText(mProjectListData.get(position).getProjectName());
@@ -48,6 +48,7 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ClientPage.class);
+                intent.putExtra("title", holder.projectName.getText().toString());
                 mContext.startActivity(intent);
             }
         });

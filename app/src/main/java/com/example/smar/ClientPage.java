@@ -21,6 +21,8 @@ public class ClientPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_page);
 
+        String a = getIntent().getStringExtra("title");
+
 
         clientRecyclerView = findViewById(R.id.clientRecyclerView);
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(ClientPage.this,

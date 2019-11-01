@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="20dp">
+    android:layout_marginTop="20dp"
+    android:padding="7dp">
 
 
     <TextView
@@ -10,8 +11,9 @@
         android:layout_height="wrap_content"
         android:text="Abhra 1504"
         android:id="@+id/projectName"
-        android:textSize="15dp"
-        android:textAlignment="center"
+        android:textSize="16dp"
+       android:textAlignment="textStart"
+        android:layout_marginStart="3dp"
         android:textColor="@color/blue"
         android:layout_marginTop="10dp"
         android:layout_weight="1">
@@ -29,13 +31,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="This Week"
-            android:textSize="15dp"
+            android:textSize="14dp"
             android:id="@+id/day"
             />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Handles, Misc Work"
+            android:textSize="14dp"
             android:id="@+id/work"
             />
 
@@ -61,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Oct 31 2019"
-            android:textSize="15dp" />
+            android:textSize="14dp" />
 
 
     </LinearLayout>

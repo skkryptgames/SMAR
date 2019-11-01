@@ -1,10 +1,13 @@
 package com.example.smar;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,11 +20,33 @@ public class AdminPage extends AppCompatActivity {
     ArrayList<ProjectList> mProjectListData = new ArrayList<>();
     ProjectListAdapter adapter;
     Button button;
+    Toolbar toolBar;
+    ActionBar toolbar;
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_page);
+
+        toolbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.toolbar_layout);
+        getSupportActionBar().getCustomView();
+
+        toolbar=getActionBar();
+
+
+
+        /*toolBar = (Toolbar) findViewById(R.id.toolBar);
+        setSupportActionBar(toolBar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+
+        toolBar.setNavigationIcon(R.drawable.ic_chevron_left_black_24dp);*/
+
 
         button= findViewById(R.id.smar_button_addproject);
 
