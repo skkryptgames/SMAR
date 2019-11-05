@@ -12,11 +12,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+
 public class NewProjectEndDateFragment extends Fragment {
 
     private CalendarView calendarView;
     private Button button;
     Bundle bundle1;
+    String uid,endDate;
 
     @Nullable
     @Override
@@ -31,10 +38,15 @@ public class NewProjectEndDateFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         calendarView=view.findViewById(R.id.smar_calenderview_calender);
         button=view.findViewById(R.id.smar_button_enddatenext);
+        uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
+
+                String month = monthFinder(i1);
+                endDate=month+" "+i2+" "+i;
+
 
             }
         });
@@ -42,6 +54,12 @@ public class NewProjectEndDateFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(bundle1.getString("projectTitle"));
+                HashMap<String,Object> map=new HashMap<>();
+                map.put("endDate",endDate);
+                reference.updateChildren(map);
+
                 Fragment fragment=new NewProjectSelectModulesFragment();
                 FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
                 //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
@@ -54,5 +72,12 @@ public class NewProjectEndDateFragment extends Fragment {
             }
         });
 
+    }
+
+    private String monthFinder(int a){
+        String month;
+        String x[]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+        month=x[a];
+        return month;
     }
 }

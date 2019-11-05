@@ -56,6 +56,7 @@
                 android:textSize="14sp"
                 />
             <EditText
+                android:id="@+id/smar_edittext_numofdays"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"

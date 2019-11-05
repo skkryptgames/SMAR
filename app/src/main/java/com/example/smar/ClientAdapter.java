@@ -38,33 +38,36 @@ public class ClientAdapter extends RecyclerView.Adapter<ClientAdapter.ClientView
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ClientAdapter.ClientViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ClientAdapter.ClientViewHolder holder, final int position) {
 
         final Client client=titles.get(position);
         holder.design.setText(titles.get(position).getTitle());
         holder.targetDate.setText(titles.get(position).getDate());
-        holder.panorama.setImageResource(client.isSelected() ? R.drawable.ic_checked : R.drawable.ic_panorama_fish_eye_black_24dp);
+        holder.panorama.setImageResource(titles.get(position).getTick());
+       // holder.panorama.setImageResource(client.isSelected() ? R.drawable.ic_checked : R.drawable.ic_panorama_fish_eye_black_24dp);
         holder.ruler.setImageResource(titles.get(position).getImages());
 
-        holder.panorama.setOnClickListener(new View.OnClickListener() {
+      /*  holder.panorama.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 client.setSelected(!client.isSelected());
                 holder.panorama.setImageResource(client.isSelected() ? R.drawable.ic_checked : R.drawable.ic_panorama_fish_eye_black_24dp);
 
             }
-        });
+        });*/
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 Fragment fragment=new TaskStatusUpdate();
-                FragmentTransaction fragmentTransaction=((AppCompatActivity)context).getSupportFragmentManager().beginTransaction();
+                FragmentTransaction fragmentTransaction=((ClientPage)context).getSupportFragmentManager().beginTransaction();
 
                 Bundle bundle=new Bundle();
                 bundle.putString("moduleName",holder.design.getText().toString());
                 bundle.putString("targetDate",holder.targetDate.getText().toString());
+                bundle.putInt("position",position);
+                bundle.putInt("image",titles.get(position).getImages());
                 fragment.setArguments(bundle);
 
                 fragmentTransaction.replace(R.id.fragment_container,fragment);
