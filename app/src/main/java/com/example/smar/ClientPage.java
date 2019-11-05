@@ -11,6 +11,7 @@ import android.app.ActionBar;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,9 +21,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
-import static com.example.smar.AdminPage.populateData;
 
 public class ClientPage extends AppCompatActivity {
 
@@ -33,6 +38,7 @@ public class ClientPage extends AppCompatActivity {
     TextView toolbarTitle;
     ImageView toolbarImage;
     String title;
+    static String pId;
 
 
     @SuppressLint("WrongConstant")
@@ -41,10 +47,11 @@ public class ClientPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_page);
 
-        clientData=populateData();
+        //clientData=populateData();
 
 
         title = getIntent().getStringExtra("title");
+        pId=getIntent().getStringExtra("projectId");
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.toolbar_layout);
         getSupportActionBar().getCustomView();
@@ -64,7 +71,7 @@ public class ClientPage extends AppCompatActivity {
         clientRecyclerView.setVisibility(View.VISIBLE);
 
         String uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference reference= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(title).child("tasks");
+        DatabaseReference reference= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId).child("tasks");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -72,9 +79,15 @@ public class ClientPage extends AppCompatActivity {
                 for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
                     String tName=dataSnapshot1.child("taskName").getValue(String.class);
                     String date=dataSnapshot1.child("startDate").getValue(String.class);
-                    String days=dataSnapshot1.child("numOfDays").getValue(String.class);
+                    int days=dataSnapshot1.child("numOfDays").getValue(Integer.class);
                     int image=dataSnapshot1.child("taskImage").getValue(Integer.class);
-                    Client data=new Client(date,R.drawable.ic_panorama_fish_eye_black_24dp,tName,image);
+                    String taskId=dataSnapshot1.child("taskId").getValue(String.class);
+                    int progress=dataSnapshot1.child("progress").getValue(Integer.class);
+                    String endDate=dateFinder(date,days);
+                    Client data=new Client(endDate,progress,tName,image,taskId);
+                    clientData.add(data);
+                    adapter.notifyDataSetChanged();
+
                 }
 
             }
@@ -94,5 +107,25 @@ public class ClientPage extends AppCompatActivity {
 
 
     }
+    public static String getProjectId(){
+        String a=pId ;
+    return a;
+    }
+    private String dateFinder(String a,int days){
+        Calendar f =new GregorianCalendar();
+        Date date1=new Date();
+        SimpleDateFormat sdf=new SimpleDateFormat("MMM dd yyyy");
+        try {
+            date1=sdf.parse(a);
+            System.out.println(date1);
+            f.setTime(date1);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
+        f.add(Calendar.DAY_OF_MONTH,days);
+        String newDate=sdf.format(f.getTime());
+
+        return newDate;
+    }
 }

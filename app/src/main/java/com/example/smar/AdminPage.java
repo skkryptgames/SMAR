@@ -113,11 +113,14 @@ public class AdminPage extends AppCompatActivity {
        reference.addValueEventListener(new ValueEventListener() {
            @Override
            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+               mProjectListData.clear();
 
                for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
                   String pName= dataSnapshot1.child("projectName").getValue(String.class);
                   String endDate=dataSnapshot1.child("endDate").getValue(String.class);
-                  mProjectListData.add(new ProjectList(pName,"This Week",endDate));
+                  String pId=dataSnapshot1.child("projectId").getValue(String.class);
+
+                  mProjectListData.add(new ProjectList(pName,"This Week",endDate,pId));
                   adapter.notifyDataSetChanged();
 
                }
@@ -138,24 +141,7 @@ public class AdminPage extends AppCompatActivity {
 
     }
 
-    public static ArrayList<Client> populateData(){
-        ArrayList<Client> list =new ArrayList<>();
-        Client client = new Client("Target Date Dec11 2019",  R.drawable.ic_panorama_fish_eye_black_24dp, "Design", R.drawable.ic_023_tools);
-        Client client1 = new Client("Target Date Dec11 2019", R.drawable.ic_panorama_fish_eye_black_24dp, "Financial Budget", R.drawable.ic_021_house_plan);
-        Client client2 = new Client("Target Date Dec11 2019", R.drawable.ic_panorama_fish_eye_black_24dp , "Material Selection", R.drawable.ic_018_paint);
-        Client client3 = new Client("Target Date Dec7 2019", R.drawable.ic_panorama_fish_eye_black_24dp, "Civil Work", R.drawable.ic_020_floor);
-        Client client4= new Client("Target Date Dec1 2019",  R.drawable.ic_panorama_fish_eye_black_24dp, "Site Prep", R.drawable.ic_022_house_plan_1);
-        Client client5 = new Client("Targent Date Dec3 2019", R.drawable.ic_panorama_fish_eye_black_24dp, "Flase Ceiling Channels", R.drawable.ic_033_ceiling);
-        Client client6 = new Client("Target Date Dec7 2019",R.drawable.ic_panorama_fish_eye_black_24dp , "Electrical Wiring",R.drawable.ic_035_chandelier );
-        list.add(client);
-        list.add(client1);
-        list.add(client2);
-        list.add(client3);
-        list.add(client4);
-        list.add(client5);
-        list.add(client6);
-        return list;
-    }
+
 
     public static void addData(String name,String day,String date){
 

@@ -56,7 +56,7 @@ public class NewProjectStartDateFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(bundle1.getString("projectTitle"));
+                DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(bundle1.getString("projectKey"));
                 HashMap<String,Object> map=new HashMap<>();
                 map.put("startDate",startDate);
                 reference.updateChildren(map);
@@ -67,6 +67,7 @@ public class NewProjectStartDateFragment extends Fragment {
                 //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
                 Bundle bundle=new Bundle();
                 bundle.putString("projectTitle",bundle1.getString("projectTitle"));
+                bundle.putString("projectKey",bundle1.getString("projectKey"));
                 fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.fragment_container,fragment);
                 fragmentTransaction.addToBackStack(null);

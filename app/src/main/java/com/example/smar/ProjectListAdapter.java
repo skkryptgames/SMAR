@@ -56,6 +56,7 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ClientPage.class);
                 intent.putExtra("title", holder.projectName.getText().toString());
+                intent.putExtra("projectId",mProjectListData.get(position).getpId());
                 mContext.startActivity(intent);
             }
         });

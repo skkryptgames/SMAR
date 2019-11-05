@@ -8,6 +8,15 @@ public class Client {
     String title;
     int Images;
     boolean isSelected=false;
+    String taskId;
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
 
     public Client(){
 
@@ -35,10 +44,11 @@ public class Client {
         return Images;
     }
 
-    public Client(String date, int tick, String title, int images) {
+    public Client(String date, int tick, String title, int images,String taskId) {
         this.date = date;
         this.tick = tick;
         this.title = title;
         this.Images = images;
+        this.taskId=taskId;
     }
 }

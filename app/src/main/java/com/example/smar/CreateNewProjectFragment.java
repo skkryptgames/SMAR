@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -22,6 +23,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+
+import static android.content.Context.INPUT_METHOD_SERVICE;
 
 public class CreateNewProjectFragment extends Fragment {
 
@@ -42,6 +45,12 @@ public class CreateNewProjectFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                try {
+                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                } catch (Exception e) {
+                   
+                }
                 count=0;
 
 
@@ -64,7 +73,7 @@ public class CreateNewProjectFragment extends Fragment {
                                 map.put("clientName", cName.getText().toString());
                                 map.put("clientNumber", pNumber.getText().toString());
                                 map.put("projectId", key);
-                                reference.child(pName.getText().toString()).updateChildren(map);
+                                reference.child(key).updateChildren(map);
 
                                 Fragment fragment=new NewProjectStartDateFragment();
                                 FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
@@ -72,6 +81,7 @@ public class CreateNewProjectFragment extends Fragment {
 
                                 Bundle bundle=new Bundle();
                                 bundle.putString("projectTitle",pName.getText().toString());
+                                bundle.putString("projectKey",key);
                                 fragment.setArguments(bundle);
                                 fragmentTransaction.replace(R.id.fragment_container,fragment);
                                 fragmentTransaction.addToBackStack(null);

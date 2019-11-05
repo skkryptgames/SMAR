@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RadioButton;
@@ -69,7 +70,7 @@ public class NewProjectSelectModulesFragment extends Fragment {
                     fm.popBackStack();}
 
 
-                    DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(bundle1.getString("projectTitle"));
+                    DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(bundle1.getString("projectKey"));
                     DatabaseReference reference1=reference.child("tasks");
                     for(ModulesPojo model:modulesList){
                         if(model.isSelected()){
@@ -80,7 +81,8 @@ public class NewProjectSelectModulesFragment extends Fragment {
                             map.put("taskImage",model.getImage());
                             map.put("startDate",model.getStartDate());
                             map.put("numOfDays",model.getNumOfDays());
-                            reference1.child(model.getName()).updateChildren(map);
+                            map.put("progress",R.drawable.ic_panorama_fish_eye_black_24dp);
+                            reference1.child(key).updateChildren(map);
                         }
                     }
 
@@ -106,8 +108,9 @@ public class NewProjectSelectModulesFragment extends Fragment {
     }
 
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
-        private TextView moduleName,startDate,numOfDays;
+        private TextView moduleName,startDate;
         private ImageView moduleImage,radioButtonImage;
+        private EditText numOfDays;
 
 
         public RecyclerViewHolder(@NonNull View itemView) {
@@ -170,9 +173,14 @@ public class NewProjectSelectModulesFragment extends Fragment {
                         @Override
                         public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
                             String month = monthFinder(i1);
-                            holder.startDate.setText(month + " " + i2 + " " + i);
-                            modulesList.get(position).setStartDate(month + " " + i2 + " " + i);
-                            calendarDialogPopup.dismiss();
+                            if(i2>0&&i2<10){
+                            holder.startDate.setText(month + " " +"0"+i2 + " " + i);
+                            modulesList.get(position).setStartDate(month + " " +"0"+i2 + " " + i);
+                            calendarDialogPopup.dismiss();}else {
+                                holder.startDate.setText(month + " " + i2 + " " + i);
+                                modulesList.get(position).setStartDate(month + " " + i2 + " " + i);
+                                calendarDialogPopup.dismiss();
+                            }
 
                         }
                     });
@@ -190,14 +198,15 @@ public class NewProjectSelectModulesFragment extends Fragment {
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                    modulesList.get(position).setNumOfDays(charSequence.toString());
                 }
 
                 @Override
                 public void afterTextChanged(Editable editable) {
-
+                    if(editable.length()!=0)
+                    modulesList.get(position).setNumOfDays( Integer.parseInt( holder.numOfDays.getText().toString() ));
                 }
             });
+
 
 
 
@@ -211,11 +220,11 @@ public class NewProjectSelectModulesFragment extends Fragment {
     }
 
     public void populateList(){
-        ModulesPojo one=new ModulesPojo(R.drawable.ic_021_house_plan,"Arm Chair","MMM DD YYYY","x");
-        ModulesPojo two=new ModulesPojo(R.drawable.ic_018_paint,"Curtains","MMM DD YYYY","x");
-        ModulesPojo three=new ModulesPojo(R.drawable.ic_020_floor,"Floor","MMM DD YYYY","x");
-        ModulesPojo four=new ModulesPojo(R.drawable.ic_023_tools,"Home Cinema","MMM DD YYYY","x");
-        ModulesPojo five=new ModulesPojo(R.drawable.ic_033_ceiling,"Stairs","MMM DD YYYY","x");
+        ModulesPojo one=new ModulesPojo(R.drawable.ic_021_house_plan,"Arm Chair","MMM DD YYYY",0);
+        ModulesPojo two=new ModulesPojo(R.drawable.ic_018_paint,"Curtains","MMM DD YYYY",0);
+        ModulesPojo three=new ModulesPojo(R.drawable.ic_020_floor,"Floor","MMM DD YYYY",0);
+        ModulesPojo four=new ModulesPojo(R.drawable.ic_023_tools,"Home Cinema","MMM DD YYYY",0);
+        ModulesPojo five=new ModulesPojo(R.drawable.ic_033_ceiling,"Stairs","MMM DD YYYY",0);
         modulesList.add(one);
         modulesList.add(two);
         modulesList.add(three);

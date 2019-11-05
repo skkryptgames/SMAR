@@ -16,10 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import static com.example.smar.ClientPage.getProjectId;
+
 public class ClientAdapter extends RecyclerView.Adapter<ClientAdapter.ClientViewHolder> {
 
     private ArrayList<Client> titles;
     Context context;
+    String pId=getProjectId();
 
 
 
@@ -64,6 +67,9 @@ public class ClientAdapter extends RecyclerView.Adapter<ClientAdapter.ClientView
                 FragmentTransaction fragmentTransaction=((ClientPage)context).getSupportFragmentManager().beginTransaction();
 
                 Bundle bundle=new Bundle();
+
+                bundle.putString("taskId",titles.get(position).getTaskId());
+                bundle.putString("projectId",pId);
                 bundle.putString("moduleName",holder.design.getText().toString());
                 bundle.putString("targetDate",holder.targetDate.getText().toString());
                 bundle.putInt("position",position);
