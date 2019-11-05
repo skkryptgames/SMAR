@@ -12,6 +12,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 
 public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.MyViewHolder> {
@@ -49,6 +56,7 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ClientPage.class);
                 intent.putExtra("title", holder.projectName.getText().toString());
+                intent.putExtra("projectId",mProjectListData.get(position).getpId());
                 mContext.startActivity(intent);
             }
         });

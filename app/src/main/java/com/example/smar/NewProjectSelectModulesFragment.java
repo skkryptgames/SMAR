@@ -3,10 +3,13 @@ package com.example.smar;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Layout;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RadioButton;
@@ -23,11 +27,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import static android.content.ContentValues.TAG;
 
@@ -36,15 +47,45 @@ public class NewProjectSelectModulesFragment extends Fragment {
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private Button button;
     CalendarDialogPopup calendarDialogPopup;
+    String pTitle,uid;
+    Bundle bundle1;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         button=view.findViewById(R.id.smar_button_modulesdone);
+        uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getContext(),"new project has been created and added to the list",Toast.LENGTH_SHORT).show();
+
+                Intent intent=new Intent(getContext(),AdminPage.class);
+                startActivity(intent);
+                ((AdminPage)getActivity()).button.setVisibility(View.VISIBLE);
+                ((AdminPage)getActivity()).mProjectListData.clear();
+                ((AdminPage)getActivity()).addData(pTitle,"This Week","Nov 01 2019");
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                for (int i = 0; i <= fm.getBackStackEntryCount(); i++) {
+                    fm.popBackStack();}
+
+
+                    DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(bundle1.getString("projectKey"));
+                    DatabaseReference reference1=reference.child("tasks");
+                    for(ModulesPojo model:modulesList){
+                        if(model.isSelected()){
+                            String key=reference1.push().getKey();
+                            HashMap<String,Object> map=new HashMap<>();
+                            map.put("taskId",key);
+                            map.put("taskName",model.getName());
+                            map.put("taskImage",model.getImage());
+                            map.put("startDate",model.getStartDate());
+                            map.put("numOfDays",model.getNumOfDays());
+                            map.put("progress",R.drawable.ic_panorama_fish_eye_black_24dp);
+                            reference1.child(key).updateChildren(map);
+                        }
+                    }
+
             }
         });
 
@@ -57,14 +98,19 @@ public class NewProjectSelectModulesFragment extends Fragment {
         RecyclerView recyclerView=view.findViewById(R.id.smar_recyclerview_modules);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(new RecyclerViewAdapter(modulesList,getContext()));
+        bundle1=getArguments();
+        pTitle=bundle1.getString("projectTitle");
+        ((AdminPage)getActivity()).toolbarTitle.setText(pTitle);
+
 
         populateList();
         return view;
     }
 
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
-        private TextView moduleName,startDate,numOfDays;
+        private TextView moduleName,startDate;
         private ImageView moduleImage,radioButtonImage;
+        private EditText numOfDays;
 
 
         public RecyclerViewHolder(@NonNull View itemView) {
@@ -79,7 +125,7 @@ public class NewProjectSelectModulesFragment extends Fragment {
             moduleName=itemView.findViewById(R.id.smar_textview_modulename);
             radioButtonImage=itemView.findViewById(R.id.smar_radiobutton);
             startDate=itemView.findViewById(R.id.smar_textview_startdate);
-            numOfDays=itemView.findViewById(R.id.smar_textview_numofdays);
+            numOfDays=itemView.findViewById(R.id.smar_edittext_numofdays);
 
         }
     }
@@ -101,7 +147,7 @@ public class NewProjectSelectModulesFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final RecyclerViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull final RecyclerViewHolder holder, final int position) {
             final ModulesPojo modulesPojo = detailsList.get(position);
             holder.moduleName.setText(detailsList.get(position).getName());
             holder.moduleImage.setImageResource(detailsList.get(position).getImage());
@@ -127,8 +173,14 @@ public class NewProjectSelectModulesFragment extends Fragment {
                         @Override
                         public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
                             String month = monthFinder(i1);
-                            holder.startDate.setText(month + " " + i2 + " " + i);
-                            calendarDialogPopup.dismiss();
+                            if(i2>0&&i2<10){
+                            holder.startDate.setText(month + " " +"0"+i2 + " " + i);
+                            modulesList.get(position).setStartDate(month + " " +"0"+i2 + " " + i);
+                            calendarDialogPopup.dismiss();}else {
+                                holder.startDate.setText(month + " " + i2 + " " + i);
+                                modulesList.get(position).setStartDate(month + " " + i2 + " " + i);
+                                calendarDialogPopup.dismiss();
+                            }
 
                         }
                     });
@@ -137,6 +189,24 @@ public class NewProjectSelectModulesFragment extends Fragment {
 
 
             });
+            holder.numOfDays.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    if(editable.length()!=0)
+                    modulesList.get(position).setNumOfDays( Integer.parseInt( holder.numOfDays.getText().toString() ));
+                }
+            });
+
 
 
 
@@ -150,11 +220,11 @@ public class NewProjectSelectModulesFragment extends Fragment {
     }
 
     public void populateList(){
-        ModulesPojo one=new ModulesPojo(R.drawable.ic_021_house_plan,"Arm Chair");
-        ModulesPojo two=new ModulesPojo(R.drawable.ic_018_paint,"Curtains");
-        ModulesPojo three=new ModulesPojo(R.drawable.ic_020_floor,"Floor");
-        ModulesPojo four=new ModulesPojo(R.drawable.ic_023_tools,"Home Cinema");
-        ModulesPojo five=new ModulesPojo(R.drawable.ic_033_ceiling,"Stairs");
+        ModulesPojo one=new ModulesPojo(R.drawable.ic_021_house_plan,"Arm Chair","MMM DD YYYY",0);
+        ModulesPojo two=new ModulesPojo(R.drawable.ic_018_paint,"Curtains","MMM DD YYYY",0);
+        ModulesPojo three=new ModulesPojo(R.drawable.ic_020_floor,"Floor","MMM DD YYYY",0);
+        ModulesPojo four=new ModulesPojo(R.drawable.ic_023_tools,"Home Cinema","MMM DD YYYY",0);
+        ModulesPojo five=new ModulesPojo(R.drawable.ic_033_ceiling,"Stairs","MMM DD YYYY",0);
         modulesList.add(one);
         modulesList.add(two);
         modulesList.add(three);
