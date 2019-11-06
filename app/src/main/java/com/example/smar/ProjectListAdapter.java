@@ -12,6 +12,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 
 public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.MyViewHolder> {
@@ -37,35 +44,22 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
 
-        holder.imageView.setImageResource(R.drawable.ic_panorama_fish_eye_black_24dp);
+        holder.imageView.setImageResource(mProjectListData.get(position).getProgress());
         holder.projectName.setText(mProjectListData.get(position).getProjectName());
-        holder.day.setText(mProjectListData.get(position).getDay());
+        holder.work.setText(mProjectListData.get(position).getWork());
         holder.date.setText(mProjectListData.get(position).getDate());
 
-        holder.projectName.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ClientPage.class);
+                intent.putExtra("title", holder.projectName.getText().toString());
+                intent.putExtra("projectId",mProjectListData.get(position).getpId());
                 mContext.startActivity(intent);
             }
         });
-
-        holder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (projectisStarted==true) {
-                    holder.imageView.setImageResource(R.drawable.ic_ellipse_45);
-                } else if (projectisDelayed  == true){
-                    holder.imageView.setImageResource(R.drawable.ic_ellipse_77);
-                } else {
-                    holder.imageView.setBackgroundColor(Color.TRANSPARENT);
-                }
-            }
-        });
-
     }
 
     @Override

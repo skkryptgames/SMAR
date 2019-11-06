@@ -1,43 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="20dp">
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="20dp">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/projectnameleft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.01" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/projectnametop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.40" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/taskstop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.16" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/tasksleft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.28" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/statusleft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.76" />
 
 
     <TextView
+        android:id="@+id/projectName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxWidth="120dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
         android:text="Abhra 1504"
-        android:id="@+id/projectName"
-        android:textSize="15dp"
         android:textAlignment="center"
         android:textColor="@color/blue"
-        android:layout_marginTop="10dp"
-        android:layout_weight="1">
+        android:textSize="16dp"
+        app:layout_constraintStart_toStartOf="@+id/projectnameleft"
+        app:layout_constraintTop_toTopOf="@+id/projectnametop">
 
     </TextView>
-
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:orientation="vertical"
-        android:layout_weight="1">
+        app:layout_constraintStart_toStartOf="@+id/tasksleft"
+        app:layout_constraintTop_toTopOf="@+id/taskstop">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="This Week"
-            android:textSize="15dp"
             android:id="@+id/day"
-            />
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Handles, Misc Work"
+            android:fontFamily="@font/nunitoregular"
+            android:text="This Week"
+            android:textAlignment="viewStart"
+            android:textColor="@color/black"
+            android:textSize="14dp" />
+
+        <TextView
             android:id="@+id/work"
-            />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunitoregular"
+            android:maxWidth="180dp"
+            android:text="Handles, Misc Work"
+            android:textColor="@color/gray"
+            android:textSize="14dp" />
 
 
     </LinearLayout>
@@ -45,30 +92,31 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
-
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="4dp"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="@+id/statusleft"
+        app:layout_constraintTop_toTopOf="@+id/taskstop">
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/ic_panorama_fish_eye_black_24dp" />
-
         <TextView
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Oct 31 2019"
-            android:textSize="15dp" />
+            android:textColor="@color/gray"
+            android:textSize="14dp" />
+
+
 
 
     </LinearLayout>
 
 
-
-
-
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,7 +3,25 @@ package com.example.smar;
 public class ModulesPojo {
 
     int image;
-    String name;
+    int numOfDays;
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public int getNumOfDays() {
+        return numOfDays;
+    }
+
+    public void setNumOfDays(int numOfDays) {
+        this.numOfDays = numOfDays;
+    }
+
+    String name,startDate;
     private boolean isSelected=false;
 
     public int getImage() {
@@ -22,9 +40,11 @@ public class ModulesPojo {
         this.name = name;
     }
 
-    public ModulesPojo(int image, String name) {
+    public ModulesPojo(int image, String name,String startDate,int numOfDays) {
         this.image = image;
         this.name = name;
+        this.startDate=startDate;
+        this.numOfDays=numOfDays;
     }
     public void setSelected(boolean selected) {
         isSelected = selected;

@@ -19,7 +19,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class AuthenticationActivity extends AppCompatActivity {
@@ -104,10 +110,37 @@ public class AuthenticationActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             //Toast.makeText(getApplicationContext(),"User successfully signed in",Toast.LENGTH_SHORT).show();
-                            Intent homeIntent = new Intent(AuthenticationActivity.this, AdminPage.class);
+                            final String uid=mAuth.getCurrentUser().getUid();
+                            final DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users");
+                            reference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if(dataSnapshot.exists()){
+                                        if(dataSnapshot.child("info").child("userType").getValue(String.class).equals("admin")){
+                                            Intent homeIntent = new Intent(AuthenticationActivity.this, AdminPage.class);
+                                            startActivity(homeIntent);
+                                            finish();
+                                        }else {
+                                            Intent clientIntent =new Intent(AuthenticationActivity.this,ClientPage.class);
+                                            startActivity(clientIntent);
+                                            finish();
+                                        }
+                                    }else{
+                                        HashMap<String,Object> a=new HashMap<>();
+                                        a.put("phoneNumber",userNumber);
+                                        a.put("userType","admin");
+                                        reference.child(uid).child("info").updateChildren(a);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
                             //homeIntent.putExtra("number",userNumber);
-                            startActivity(homeIntent);
-                            finish();
+
                         } else {
                             Toast.makeText(getApplicationContext(), "You have entered incorrect OTP", Toast.LENGTH_SHORT).show();
                         }
