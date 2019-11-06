@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 
 
 public class ClientPage extends AppCompatActivity {
@@ -37,8 +38,10 @@ public class ClientPage extends AppCompatActivity {
     ActionBar toolbar;
     TextView toolbarTitle;
     ImageView toolbarImage;
-    String title;
+    String title,uid;
     static String pId;
+    DatabaseReference reference;
+    int notStarted=0,inProgress=0,delayed=0,completed=0;
 
 
     @SuppressLint("WrongConstant")
@@ -70,8 +73,8 @@ public class ClientPage extends AppCompatActivity {
 
         clientRecyclerView.setVisibility(View.VISIBLE);
 
-        String uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference reference= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId).child("tasks");
+        uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
+         reference= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId).child("tasks");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -89,6 +92,8 @@ public class ClientPage extends AppCompatActivity {
                     adapter.notifyDataSetChanged();
 
                 }
+                setProjectStatus();
+                tasksToBeDoneThisWeek();
 
             }
 
@@ -127,5 +132,102 @@ public class ClientPage extends AppCompatActivity {
         String newDate=sdf.format(f.getTime());
 
         return newDate;
+    }
+
+
+    public void setProjectStatus(){
+
+        final DatabaseReference reference1= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId);
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                inProgress=delayed=completed=0;
+
+                for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                    if(dataSnapshot1.child("progress").getValue(Integer.class)==R.drawable.ic_ellipse_45){
+                        inProgress++;
+                    }else if(dataSnapshot1.child("progress").getValue(Integer.class)==R.drawable.ic_ellipse_77){
+                        delayed++;
+                    }else if(dataSnapshot1.child("progress").getValue(Integer.class)==R.drawable.ic_checked){
+                        completed++;
+                    }
+                }
+                if(completed==clientData.size()){
+                    HashMap<String,Object> map=new HashMap<>();
+                    map.put("progress",R.drawable.ic_checked);
+                    reference1.updateChildren(map);
+                }else if(delayed>0){
+                    HashMap<String,Object> map=new HashMap<>();
+                    map.put("progress",R.drawable.ic_ellipse_77);
+                    reference1.updateChildren(map);
+                } else if(inProgress>0){
+                    HashMap<String,Object> map=new HashMap<>();
+                    map.put("progress",R.drawable.ic_ellipse_45);
+                    reference1.updateChildren(map);
+                }else{
+                    HashMap<String,Object> map=new HashMap<>();
+                    map.put("progress",R.drawable.ic_panorama_fish_eye_black_24dp);
+                    reference1.updateChildren(map);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void tasksToBeDoneThisWeek(){
+        String a="";
+        final DatabaseReference reference1= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId);
+        Calendar calendar=Calendar.getInstance();
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String b="";
+                for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                    String date=dataSnapshot1.child("startDate").getValue(String.class);
+                    if(checkDateInThisWeek(date)){
+
+                        b=b+", "+dataSnapshot1.child("taskName").getValue(String.class);
+
+                    }
+                }
+                b=b.replaceFirst("(?:, )+","");
+                HashMap<String,Object> map=new HashMap<>();
+                map.put("thisWeekTasks",b);
+                reference1.updateChildren(map);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+    public boolean checkDateInThisWeek(String date){
+        Date date2= new Date();
+        try {
+            date2 = new SimpleDateFormat("MMM dd yyyy").parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar c = Calendar.getInstance();
+        c.setFirstDayOfWeek(Calendar.MONDAY);
+
+        c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+
+        Date monday = c.getTime();
+
+        Date nextMonday= new Date(monday.getTime()+7*24*60*60*1000);
+
+        boolean isThisWeek = date2.after(monday) && date2.before(nextMonday);
+
+        return isThisWeek;
     }
 }

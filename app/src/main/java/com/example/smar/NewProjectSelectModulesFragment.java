@@ -33,11 +33,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 import static android.content.ContentValues.TAG;
@@ -49,6 +55,7 @@ public class NewProjectSelectModulesFragment extends Fragment {
     CalendarDialogPopup calendarDialogPopup;
     String pTitle,uid;
     Bundle bundle1;
+    DatabaseReference reference3;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -63,18 +70,18 @@ public class NewProjectSelectModulesFragment extends Fragment {
                 Intent intent=new Intent(getContext(),AdminPage.class);
                 startActivity(intent);
                 ((AdminPage)getActivity()).button.setVisibility(View.VISIBLE);
-                ((AdminPage)getActivity()).mProjectListData.clear();
-                ((AdminPage)getActivity()).addData(pTitle,"This Week","Nov 01 2019");
+               // ((AdminPage)getActivity()).mProjectListData.clear();
+               // ((AdminPage)getActivity()).addData(pTitle,"This Week","Nov 01 2019");
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 for (int i = 0; i <= fm.getBackStackEntryCount(); i++) {
                     fm.popBackStack();}
 
 
                     DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(bundle1.getString("projectKey"));
-                    DatabaseReference reference1=reference.child("tasks");
+                    reference3=reference.child("tasks");
                     for(ModulesPojo model:modulesList){
                         if(model.isSelected()){
-                            String key=reference1.push().getKey();
+                            String key=reference3.push().getKey();
                             HashMap<String,Object> map=new HashMap<>();
                             map.put("taskId",key);
                             map.put("taskName",model.getName());
@@ -82,9 +89,10 @@ public class NewProjectSelectModulesFragment extends Fragment {
                             map.put("startDate",model.getStartDate());
                             map.put("numOfDays",model.getNumOfDays());
                             map.put("progress",R.drawable.ic_panorama_fish_eye_black_24dp);
-                            reference1.child(key).updateChildren(map);
+                            reference3.child(key).updateChildren(map);
                         }
                     }
+                    tasksToBeDoneThisWeek();
 
             }
         });
@@ -236,5 +244,59 @@ public class NewProjectSelectModulesFragment extends Fragment {
         String x[]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
         month=x[a];
         return month;
+    }
+
+    public void tasksToBeDoneThisWeek(){
+        String a="";
+        final DatabaseReference reference1= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(bundle1.getString("projectKey"));
+        Calendar calendar=Calendar.getInstance();
+        reference3.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String b="";
+                for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                    String date=dataSnapshot1.child("startDate").getValue(String.class);
+                    if(checkDateInThisWeek(date)){
+
+                        b=b+", "+dataSnapshot1.child("taskName").getValue(String.class);
+
+                    }
+                }
+                b=b.replaceFirst("(?:, )+","");
+                HashMap<String,Object> map=new HashMap<>();
+                map.put("thisWeekTasks",b);
+                reference1.updateChildren(map);
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+    public boolean checkDateInThisWeek(String date){
+        Date date2= new Date();
+        try {
+            date2 = new SimpleDateFormat("MMM dd yyyy").parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar c = Calendar.getInstance();
+        c.setFirstDayOfWeek(Calendar.MONDAY);
+
+        c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+
+        Date monday = c.getTime();
+
+        Date nextMonday= new Date(monday.getTime()+7*24*60*60*1000);
+
+        boolean isThisWeek = date2.after(monday) && date2.before(nextMonday);
+
+        return isThisWeek;
     }
 }

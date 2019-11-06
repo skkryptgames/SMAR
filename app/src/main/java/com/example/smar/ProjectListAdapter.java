@@ -46,12 +46,12 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
 
-        holder.imageView.setImageResource(R.drawable.ic_panorama_fish_eye_black_24dp);
+        holder.imageView.setImageResource(mProjectListData.get(position).getProgress());
         holder.projectName.setText(mProjectListData.get(position).getProjectName());
-        holder.day.setText(mProjectListData.get(position).getDay());
+        holder.work.setText(mProjectListData.get(position).getWork());
         holder.date.setText(mProjectListData.get(position).getDate());
 
-        holder.projectName.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ClientPage.class);
@@ -60,21 +60,6 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
                 mContext.startActivity(intent);
             }
         });
-
-        holder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (projectisStarted==true) {
-                    holder.imageView.setImageResource(R.drawable.ic_ellipse_45);
-                } else if (projectisDelayed  == true){
-                    holder.imageView.setImageResource(R.drawable.ic_ellipse_77);
-                } else {
-                    holder.imageView.setBackgroundColor(Color.TRANSPARENT);
-                }
-            }
-        });
-
     }
 
     @Override

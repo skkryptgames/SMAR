@@ -28,13 +28,14 @@ public class AdminPage extends AppCompatActivity {
 
     RecyclerView recyclerView;
     ArrayList<ProjectList> mProjectListData = new ArrayList<>();
+    ArrayList<String> thisWeekTasks=new ArrayList<>();
     ProjectListAdapter adapter;
     Button button;
     Toolbar toolBar;
     ActionBar toolbar;
     TextView toolbarTitle;
     ImageView toolbarImage;
-    String uid;
+    String uid,b;
 
     @Override
     public void onBackPressed() {
@@ -109,18 +110,21 @@ public class AdminPage extends AppCompatActivity {
         mProjectListData.add(projectList3);*/
 
        uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
-       DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects");
+       final DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects");
        reference.addValueEventListener(new ValueEventListener() {
            @Override
            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                mProjectListData.clear();
 
-               for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                  String pName= dataSnapshot1.child("projectName").getValue(String.class);
-                  String endDate=dataSnapshot1.child("endDate").getValue(String.class);
-                  String pId=dataSnapshot1.child("projectId").getValue(String.class);
 
-                  mProjectListData.add(new ProjectList(pName,"This Week",endDate,pId));
+               for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                  final String pName= dataSnapshot1.child("projectName").getValue(String.class);
+                 final String endDate=dataSnapshot1.child("endDate").getValue(String.class);
+                  final String pId=dataSnapshot1.child("projectId").getValue(String.class);
+                  final int progress=dataSnapshot1.child("progress").getValue(Integer.class);
+                  String tasks=dataSnapshot1.child("thisWeekTasks").getValue(String.class);
+
+                  mProjectListData.add(new ProjectList(pName,tasks,endDate,pId,progress));
                   adapter.notifyDataSetChanged();
 
                }
@@ -141,11 +145,12 @@ public class AdminPage extends AppCompatActivity {
 
     }
 
-
-
-    public static void addData(String name,String day,String date){
-
-        //mProjectListData.add(new ProjectList(name,day,date));
+    public void addTasksToArrayList(){
+        b="";
+        for (int i=0;i<thisWeekTasks.size();i++){
+            b=b+thisWeekTasks.get(i)+",";
+            adapter.notifyDataSetChanged();
+        }
 
     }
 }

@@ -73,6 +73,8 @@ public class CreateNewProjectFragment extends Fragment {
                                 map.put("clientName", cName.getText().toString());
                                 map.put("clientNumber", pNumber.getText().toString());
                                 map.put("projectId", key);
+                                map.put("progress",R.drawable.ic_panorama_fish_eye_black_24dp);
+                                map.put("thisWeekTasks","");
                                 reference.child(key).updateChildren(map);
 
                                 Fragment fragment=new NewProjectStartDateFragment();
