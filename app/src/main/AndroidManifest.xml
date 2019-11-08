@@ -25,8 +25,7 @@
         <activity
             android:name=".AdminPage"
             android:theme="@style/Theme.AppCompat.Light"   />
-        <activity android:name=".ClientPage" android:theme="@style/Theme.AppCompat.Light" />
-      <activity android:name=".PhotoDisplay" android:theme="@style/Theme.AppCompat.Light" ></activity>
+        <activity android:name=".ClientPage" android:theme="@style/Theme.AppCompat.Light" android:noHistory="true"/>
 
     </application>
 

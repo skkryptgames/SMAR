@@ -60,7 +60,7 @@ import java.util.UUID;
 import static android.app.Activity.RESULT_OK;
 
 
-public class PhotoDisplay extends AppCompatActivity {
+public class PhotoDisplay extends Fragment {
 
 
     static final int RC_PERMISSION_READ_EXTERNAL_STORAGE = 1;
@@ -80,60 +80,21 @@ public class PhotoDisplay extends AppCompatActivity {
     TextView toolbarTitle;
     ImageView toolbarImage;
 
-    @Override
-    public void onBackPressed() {
-        finish();
-    }
 
-    @SuppressLint("WrongConstant")
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_display);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view=inflater.inflate(R.layout.activity_image_display,container,false);
         mStorageRef = FirebaseStorage.getInstance().getReference();
-
-        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.toolbar_layout);
-        getSupportActionBar().getCustomView();
-
-        toolbar=getActionBar();
-        toolbarTitle=findViewById(R.id.smar_toolbar_title);
-        toolbarImage=findViewById(R.id.smar_toolbar_image);
-        toolbarImage.setVisibility(View.VISIBLE);
-        this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
+        Bundle bundle=getArguments();
 
         fbUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        pId=getIntent().getStringExtra("projectId");
-        taskId=getIntent().getStringExtra("taskId");
-
-        DatabaseReference a=FirebaseDatabase.getInstance().getReference("users").child(fbUser.getUid()).child("projects").child(pId).child("projectName");
-        a.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                projectName=dataSnapshot.getValue(String.class);
-                toolbarTitle.setText(projectName);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        pId=bundle.getString("projectId");
+        taskId=bundle.getString("taskId");
 
 
-
-        toolbarImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent homeIntent=new Intent(getApplicationContext(),AdminPage.class);
-                startActivity(homeIntent);
-            }
-        });
-
-
-
-        button = (Button) findViewById(R.id.button);
+        button = (Button) view.findViewById(R.id.button);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,15 +105,13 @@ public class PhotoDisplay extends AppCompatActivity {
 
 
         fbUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (fbUser == null) {
-            finish();
-        }
+
 
 
         database = FirebaseDatabase.getInstance().getReference("users").child(fbUser.getUid()).child("projects").child(pId).child("tasks").child(taskId);
         // Setup the RecyclerView
-        photos = findViewById(R.id.photos);
-        mLayoutManager = new LinearLayoutManager(this);
+        photos =view.findViewById(R.id.photos);
+        mLayoutManager = new LinearLayoutManager(getContext());
         photos.setHasFixedSize(true);
         photos.setLayoutManager(mLayoutManager);
         mAdapter = new PhotoAdapter(this, pics);
@@ -203,12 +162,12 @@ public class PhotoDisplay extends AppCompatActivity {
 
             }
         });
-
+return view;
     }
 
     public void uploadImage(View view) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, RC_PERMISSION_READ_EXTERNAL_STORAGE);
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, RC_PERMISSION_READ_EXTERNAL_STORAGE);
         } else {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
@@ -228,7 +187,7 @@ public class PhotoDisplay extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_IMAGE_GALLERY && resultCode == RESULT_OK) {
             Uri uri = data.getData();
@@ -245,20 +204,12 @@ public class PhotoDisplay extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
                     // Handle unsuccessful uploads
-                    Toast.makeText(PhotoDisplay.this, "Upload failed!\n" + exception.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Upload failed!\n" + exception.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
 
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-
-                    /*Task<Uri> downloadUrl = taskSnapshot.getMetadata().getReference().getDownloadUrl();
-                    Log.i("Upload Finished",downloadUrl.toString() );
-                    Toast.makeText(FeedActivity.this, "Upload finished!"  , Toast.LENGTH_SHORT).show();
-                    // save image to database
-                    */
-
                     Task<Uri> task = taskSnapshot.getMetadata().getReference().getDownloadUrl();
                     task.addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override

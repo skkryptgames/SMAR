@@ -152,10 +152,17 @@ public class TaskStatusUpdate extends Fragment {
         photos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               Intent intent=new Intent(getContext(),PhotoDisplay.class);
-                intent.putExtra("projectId",pId);
-                intent.putExtra("taskId",taskId);
-                startActivity(intent);
+
+                Fragment fragment=new PhotoDisplay();
+                FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
+                //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
+                Bundle bundle=new Bundle();
+                bundle.putString("projectId",pId);
+                bundle.putString("taskId",taskId);
+                fragment.setArguments(bundle);
+                fragmentTransaction.replace(R.id.fragment_container,fragment,"photoDisplay");
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         });
 

@@ -50,13 +50,6 @@ public class AdminPage extends AppCompatActivity {
             super.onBackPressed();}
 
 
-      /* if(a==0){
-           finish();
-           System.exit(0);
-       }else {
-           super.onBackPressed();
-       }*/
-
     }
 
 
