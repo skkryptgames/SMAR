@@ -86,7 +86,7 @@ public class CreateNewProjectFragment extends Fragment {
                                 bundle.putString("projectKey",key);
                                 fragment.setArguments(bundle);
                                 fragmentTransaction.replace(R.id.fragment_container,fragment);
-                                fragmentTransaction.addToBackStack(null);
+                                fragmentTransaction.addToBackStack("hello");
                                 fragmentTransaction.commit();
 
 
@@ -107,16 +107,11 @@ public class CreateNewProjectFragment extends Fragment {
         });
     }
 
-
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.create_new_project_layout,container,false);
         ((AdminPage)getActivity()).toolbarTitle.setText("Project SetUp");
-        ((AdminPage)getActivity()).button.setVisibility(View.GONE);
         return view;
     }
-
-
 }

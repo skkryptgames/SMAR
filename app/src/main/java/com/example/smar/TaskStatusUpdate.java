@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,7 +26,7 @@ import java.util.HashMap;
 
 public class TaskStatusUpdate extends Fragment {
     Button button;
-    TextView taskName,targetDate,photos,comments;
+    TextView taskName,targetDate,photos,comments,numOfPhotos,numOfComments;
     ImageView taskImage,notStarted,inProgress,delayed,completed;
     String moduleName,date,title,taskId,uId,pId;
     int position,image;
@@ -57,8 +58,10 @@ public class TaskStatusUpdate extends Fragment {
         button=view.findViewById(R.id.smar_button_statusupdatedone);
         taskName=view.findViewById(R.id.smar_textview_modulename);
         targetDate=view.findViewById(R.id.smar_textview_targetdate);
-        photos=view.findViewById(R.id.smar_textview_numofphotos);
-        comments=view.findViewById(R.id.smar_textview_numofcomments);
+        numOfPhotos=view.findViewById(R.id.smar_textview_numofphotos);
+        numOfComments=view.findViewById(R.id.smar_textview_numofcomments);
+        photos=view.findViewById(R.id.smar_textview_photos);
+        comments=view.findViewById(R.id.smar_textview_comments);
         taskName.setText(moduleName);
         targetDate.setText(date);
         notStarted=view.findViewById(R.id.smar_imageview_notstarted);
@@ -74,6 +77,10 @@ public class TaskStatusUpdate extends Fragment {
                 map.put("progress",R.drawable.ic_panorama_fish_eye_black_24dp);
                 reference.updateChildren(map);
 
+                notStarted.setAlpha(0.4f);
+                inProgress.setAlpha(01f);
+                delayed.setAlpha(01f);
+                completed.setAlpha(01f);
             }
         });
 
@@ -83,6 +90,10 @@ public class TaskStatusUpdate extends Fragment {
                 HashMap<String,Object> map=new HashMap<>();
                 map.put("progress",R.drawable.ic_ellipse_45);
                 reference.updateChildren(map);
+                notStarted.setAlpha(01f);
+                inProgress.setAlpha(0.4f);
+                delayed.setAlpha(01f);
+                completed.setAlpha(01f);
             }
         });
 
@@ -92,6 +103,10 @@ public class TaskStatusUpdate extends Fragment {
                 HashMap<String,Object> map=new HashMap<>();
                 map.put("progress",R.drawable.ic_ellipse_77);
                 reference.updateChildren(map);
+                notStarted.setAlpha(01f);
+                inProgress.setAlpha(01f);
+                delayed.setAlpha(0.4f);
+                completed.setAlpha(01f);
             }
         });
         completed.setOnClickListener(new View.OnClickListener() {
@@ -100,6 +115,10 @@ public class TaskStatusUpdate extends Fragment {
                 HashMap<String,Object> map=new HashMap<>();
                 map.put("progress",R.drawable.ic_checked);
                 reference.updateChildren(map);
+                notStarted.setAlpha(01f);
+                inProgress.setAlpha(01f);
+                delayed.setAlpha(01f);
+                completed.setAlpha(0.4f);
             }
         });
 
@@ -109,10 +128,12 @@ public class TaskStatusUpdate extends Fragment {
             @Override
             public void onClick(View view) {
 
-                Intent intent=new Intent(getContext(),ClientPage.class);
+               /* Intent intent=new Intent(getContext(),ClientPage.class);
                 intent.putExtra("title",title);
                 intent.putExtra("projectId",pId);
-                startActivity(intent);
+                startActivity(intent);*/
+               // ((ClientPage)getActivity()).clientData.clear();
+                ((ClientPage)getActivity()).onBackPressed();
 
 
 
@@ -124,6 +145,24 @@ public class TaskStatusUpdate extends Fragment {
             public boolean onTouch(View v, MotionEvent event) {
 
                 return true;
+            }
+        });
+
+
+        photos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Fragment fragment=new PhotoDisplay();
+                FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
+                //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
+                Bundle bundle=new Bundle();
+                bundle.putString("projectId",pId);
+                bundle.putString("taskId",taskId);
+                fragment.setArguments(bundle);
+                fragmentTransaction.replace(R.id.fragment_container,fragment,"photoDisplay");
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         });
 

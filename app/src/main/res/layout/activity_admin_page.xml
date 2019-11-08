@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AdminPage">
+    tools:context=".AdminPage"
+    android:id="@+id/fragment_container">
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -12,28 +13,25 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/smar_button_addproject"
+        app:layout_constraintBottom_toTopOf="@+id/smar_layout_buttonlinear"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
 
     </androidx.recyclerview.widget.RecyclerView>
+    
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recyclerView"
-        >
-
-
-    </FrameLayout>
-
-
+<LinearLayout
+    android:id="@+id/smar_layout_buttonlinear"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    android:layout_marginBottom="20dp"
+    android:layout_marginStart="40dp"
+    android:layout_marginEnd="40dp">
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -42,13 +40,10 @@
         android:text="Add New Project"
         android:textAlignment="center"
         android:textSize="15dp"
-        android:translationZ="-8dp"
         android:textColor="@color/white"
-        android:layout_marginBottom="20dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:visibility="visible"
+
+         />
+</LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,25 +1,39 @@
 package com.example.smar;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,13 +43,21 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
+import static com.example.smar.PhotoDisplay.RC_IMAGE_GALLERY;
+
 
 public class ClientPage extends AppCompatActivity {
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
 
     RecyclerView clientRecyclerView;
     ArrayList<Client> clientData = new ArrayList<>();
     ClientAdapter adapter;
     ActionBar toolbar;
+    FirebaseUser fbUser;
     TextView toolbarTitle;
     ImageView toolbarImage;
     String title,uid;
@@ -43,6 +65,53 @@ public class ClientPage extends AppCompatActivity {
     DatabaseReference reference;
     int notStarted=0,inProgress=0,delayed=0,completed=0;
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        fbUser=FirebaseAuth.getInstance().getCurrentUser();
+        if (requestCode == RC_IMAGE_GALLERY && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            final StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+            final StorageReference imagesRef = FirebaseStorage.getInstance().getReference().child("images");
+            StorageReference userRef = imagesRef.child(fbUser.getUid());
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String filename = fbUser.getUid() + "_" + timeStamp;
+            StorageReference fileRef = userRef.child(filename);
+
+            UploadTask uploadTask = fileRef.putFile(uri);
+
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                    Toast.makeText(getApplicationContext(), "Upload failed!\n" + exception.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    PhotoDisplay a=(PhotoDisplay)getSupportFragmentManager().findFragmentByTag("photoDisplay");
+                    String tId=a.taskId;
+                    final DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(fbUser.getUid()).child("projects").child(pId).child("tasks").child(tId);
+
+
+                    Task<Uri> task = taskSnapshot.getMetadata().getReference().getDownloadUrl();
+                    task.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            String downloadUrl = uri.toString();
+                            String key = database.child("images").push().getKey();
+                            AddPhotos addPhotos = new AddPhotos(key, fbUser.getUid(), downloadUrl);
+                            database.child("images").child(key).setValue(addPhotos);
+                            Log.i("Upload Finished",downloadUrl );
+                        }
+                    });
+
+
+                }
+            });
+        }
+    }
 
     @SuppressLint("WrongConstant")
     @Override
@@ -62,8 +131,17 @@ public class ClientPage extends AppCompatActivity {
         toolbar=getActionBar();
         toolbarTitle=findViewById(R.id.smar_toolbar_title);
         toolbarImage=findViewById(R.id.smar_toolbar_image);
+        toolbarImage.setVisibility(View.VISIBLE);
         toolbarTitle.setText(title);
         this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
+
+        toolbarImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent homeIntent=new Intent(getApplicationContext(),AdminPage.class);
+                startActivity(homeIntent);
+            }
+        });
 
 
         clientRecyclerView = findViewById(R.id.clientRecyclerView);
@@ -78,6 +156,7 @@ public class ClientPage extends AppCompatActivity {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                clientData.clear();
 
                 for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
                     String tName=dataSnapshot1.child("taskName").getValue(String.class);

@@ -3,6 +3,7 @@ package com.example.smar;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,19 +37,19 @@ public class AdminPage extends AppCompatActivity {
     TextView toolbarTitle;
     ImageView toolbarImage;
     String uid,b;
+    int a=0;
 
     @Override
     public void onBackPressed() {
         if (getFragmentManager().getBackStackEntryCount() > 0) {
 
-            button.setVisibility(View.VISIBLE);
             finish();
 
         } else {
             super.onBackPressed();
-
-
         }
+
+
     }
 
 
@@ -80,7 +81,6 @@ public class AdminPage extends AppCompatActivity {
 
 
         button= findViewById(R.id.smar_button_addproject);
-        button.setVisibility(View.VISIBLE);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override

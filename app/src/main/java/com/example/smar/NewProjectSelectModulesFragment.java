@@ -67,9 +67,9 @@ public class NewProjectSelectModulesFragment extends Fragment {
             public void onClick(View view) {
                 Toast.makeText(getContext(),"new project has been created and added to the list",Toast.LENGTH_SHORT).show();
 
+
                 Intent intent=new Intent(getContext(),AdminPage.class);
                 startActivity(intent);
-                ((AdminPage)getActivity()).button.setVisibility(View.VISIBLE);
                // ((AdminPage)getActivity()).mProjectListData.clear();
                // ((AdminPage)getActivity()).addData(pTitle,"This Week","Nov 01 2019");
                 FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -298,5 +298,10 @@ public class NewProjectSelectModulesFragment extends Fragment {
         boolean isThisWeek = date2.after(monday) && date2.before(nextMonday);
 
         return isThisWeek;
+    }
+    public Boolean allowBackPressed(){
+
+        return true;
+
     }
 }

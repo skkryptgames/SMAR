@@ -5,12 +5,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
 
 import android.content.pm.PackageManager;
@@ -20,9 +24,12 @@ import android.os.Bundle;
 
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -50,8 +57,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
+import static android.app.Activity.RESULT_OK;
 
-public class PhotoDisplay extends AppCompatActivity {
+
+public class PhotoDisplay extends Fragment {
 
 
     static final int RC_PERMISSION_READ_EXTERNAL_STORAGE = 1;
@@ -66,21 +75,26 @@ public class PhotoDisplay extends AppCompatActivity {
     RecyclerView.LayoutManager mLayoutManager;
     PhotoAdapter mAdapter;
     ArrayList<AddPhotos> pics = new ArrayList<>();
+    String pId,taskId,projectName;
+    ActionBar toolbar;
+    TextView toolbarTitle;
+    ImageView toolbarImage;
 
 
-
-
-
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_display);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view=inflater.inflate(R.layout.activity_image_display,container,false);
         mStorageRef = FirebaseStorage.getInstance().getReference();
-
+        Bundle bundle=getArguments();
 
         fbUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        button = (Button) findViewById(R.id.button);
+        pId=bundle.getString("projectId");
+        taskId=bundle.getString("taskId");
+
+
+        button = (Button) view.findViewById(R.id.button);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,15 +105,13 @@ public class PhotoDisplay extends AppCompatActivity {
 
 
         fbUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (fbUser == null) {
-            finish();
-        }
 
 
-        database = FirebaseDatabase.getInstance().getReference("Image");
+
+        database = FirebaseDatabase.getInstance().getReference("users").child(fbUser.getUid()).child("projects").child(pId).child("tasks").child(taskId);
         // Setup the RecyclerView
-        photos = findViewById(R.id.photos);
-        mLayoutManager = new LinearLayoutManager(this);
+        photos =view.findViewById(R.id.photos);
+        mLayoutManager = new LinearLayoutManager(getContext());
         photos.setHasFixedSize(true);
         photos.setLayoutManager(mLayoutManager);
         mAdapter = new PhotoAdapter(this, pics);
@@ -150,12 +162,12 @@ public class PhotoDisplay extends AppCompatActivity {
 
             }
         });
-
+return view;
     }
 
     public void uploadImage(View view) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, RC_PERMISSION_READ_EXTERNAL_STORAGE);
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, RC_PERMISSION_READ_EXTERNAL_STORAGE);
         } else {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
@@ -175,7 +187,7 @@ public class PhotoDisplay extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_IMAGE_GALLERY && resultCode == RESULT_OK) {
             Uri uri = data.getData();
@@ -192,20 +204,12 @@ public class PhotoDisplay extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
                     // Handle unsuccessful uploads
-                    Toast.makeText(PhotoDisplay.this, "Upload failed!\n" + exception.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Upload failed!\n" + exception.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
 
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-
-                    /*Task<Uri> downloadUrl = taskSnapshot.getMetadata().getReference().getDownloadUrl();
-                    Log.i("Upload Finished",downloadUrl.toString() );
-                    Toast.makeText(FeedActivity.this, "Upload finished!"  , Toast.LENGTH_SHORT).show();
-                    // save image to database
-                    */
-
                     Task<Uri> task = taskSnapshot.getMetadata().getReference().getDownloadUrl();
                     task.addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
