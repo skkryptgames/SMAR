@@ -29,7 +29,6 @@ public class NewProjectEndDateFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ((AdminPage)getActivity()).toolbarTitle.setText("Project End Date");
-        ((AdminPage)getActivity()).a=1;
         bundle1=getArguments();
         return inflater.inflate(R.layout.project_end_date_layout,container,false);
     }

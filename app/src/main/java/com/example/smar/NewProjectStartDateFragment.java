@@ -30,7 +30,7 @@ public class NewProjectStartDateFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         ((AdminPage)getActivity()).toolbarTitle.setText("Project Start Date");
-        ((AdminPage)getActivity()).a=1;
+
          bundle1=getArguments();
         return inflater.inflate(R.layout.project_start_date_layout,container,false);
     }

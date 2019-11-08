@@ -66,12 +66,10 @@ public class NewProjectSelectModulesFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getContext(),"new project has been created and added to the list",Toast.LENGTH_SHORT).show();
-                ((AdminPage)getActivity()).a=0;
 
 
                 Intent intent=new Intent(getContext(),AdminPage.class);
                 startActivity(intent);
-                ((AdminPage)getActivity()).button.setVisibility(View.VISIBLE);
                // ((AdminPage)getActivity()).mProjectListData.clear();
                // ((AdminPage)getActivity()).addData(pTitle,"This Week","Nov 01 2019");
                 FragmentManager fm = getActivity().getSupportFragmentManager();

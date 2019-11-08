@@ -43,11 +43,11 @@ public class AdminPage extends AppCompatActivity {
     public void onBackPressed() {
         if (getFragmentManager().getBackStackEntryCount() > 0) {
 
-            button.setVisibility(View.VISIBLE);
             finish();
 
         } else {
-            super.onBackPressed();}
+            super.onBackPressed();
+        }
 
 
     }
@@ -81,7 +81,6 @@ public class AdminPage extends AppCompatActivity {
 
 
         button= findViewById(R.id.smar_button_addproject);
-        button.setVisibility(View.VISIBLE);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
