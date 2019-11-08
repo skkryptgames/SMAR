@@ -30,6 +30,7 @@ public class NewProjectStartDateFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         ((AdminPage)getActivity()).toolbarTitle.setText("Project Start Date");
+        ((AdminPage)getActivity()).a=1;
          bundle1=getArguments();
         return inflater.inflate(R.layout.project_start_date_layout,container,false);
     }
@@ -46,7 +47,10 @@ public class NewProjectStartDateFragment extends Fragment {
             public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
 
                 String month = monthFinder(i1);
-                startDate=month+" "+i2+" "+i;
+                if(i2>0&&i2<10)
+                    startDate=month+" "+"0"+i2+" "+i;
+                else
+                    startDate=month+" "+i2+" "+i;
 
 
             }
@@ -83,4 +87,5 @@ public class NewProjectStartDateFragment extends Fragment {
         month=x[a];
         return month;
     }
+
 }

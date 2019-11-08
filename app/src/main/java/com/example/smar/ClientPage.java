@@ -1,13 +1,16 @@
 package com.example.smar;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,6 +34,11 @@ import java.util.HashMap;
 
 
 public class ClientPage extends AppCompatActivity {
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
 
     RecyclerView clientRecyclerView;
     ArrayList<Client> clientData = new ArrayList<>();
@@ -62,8 +70,17 @@ public class ClientPage extends AppCompatActivity {
         toolbar=getActionBar();
         toolbarTitle=findViewById(R.id.smar_toolbar_title);
         toolbarImage=findViewById(R.id.smar_toolbar_image);
+        toolbarImage.setVisibility(View.VISIBLE);
         toolbarTitle.setText(title);
         this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
+
+        toolbarImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent homeIntent=new Intent(getApplicationContext(),AdminPage.class);
+                startActivity(homeIntent);
+            }
+        });
 
 
         clientRecyclerView = findViewById(R.id.clientRecyclerView);
@@ -78,6 +95,7 @@ public class ClientPage extends AppCompatActivity {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                clientData.clear();
 
                 for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
                     String tName=dataSnapshot1.child("taskName").getValue(String.class);

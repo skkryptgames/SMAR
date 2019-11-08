@@ -66,6 +66,8 @@ public class NewProjectSelectModulesFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getContext(),"new project has been created and added to the list",Toast.LENGTH_SHORT).show();
+                ((AdminPage)getActivity()).a=0;
+
 
                 Intent intent=new Intent(getContext(),AdminPage.class);
                 startActivity(intent);
@@ -298,5 +300,10 @@ public class NewProjectSelectModulesFragment extends Fragment {
         boolean isThisWeek = date2.after(monday) && date2.before(nextMonday);
 
         return isThisWeek;
+    }
+    public Boolean allowBackPressed(){
+
+        return true;
+
     }
 }

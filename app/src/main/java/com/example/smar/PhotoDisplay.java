@@ -5,12 +5,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
 
 import android.content.pm.PackageManager;
@@ -20,9 +24,12 @@ import android.os.Bundle;
 
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -50,6 +57,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
+import static android.app.Activity.RESULT_OK;
+
 
 public class PhotoDisplay extends AppCompatActivity {
 
@@ -66,19 +75,63 @@ public class PhotoDisplay extends AppCompatActivity {
     RecyclerView.LayoutManager mLayoutManager;
     PhotoAdapter mAdapter;
     ArrayList<AddPhotos> pics = new ArrayList<>();
+    String pId,taskId,projectName;
+    ActionBar toolbar;
+    TextView toolbarTitle;
+    ImageView toolbarImage;
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 
-
-
-
+    @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_display);
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.toolbar_layout);
+        getSupportActionBar().getCustomView();
+
+        toolbar=getActionBar();
+        toolbarTitle=findViewById(R.id.smar_toolbar_title);
+        toolbarImage=findViewById(R.id.smar_toolbar_image);
+        toolbarImage.setVisibility(View.VISIBLE);
+        this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
 
         fbUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        pId=getIntent().getStringExtra("projectId");
+        taskId=getIntent().getStringExtra("taskId");
+
+        DatabaseReference a=FirebaseDatabase.getInstance().getReference("users").child(fbUser.getUid()).child("projects").child(pId).child("projectName");
+        a.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                projectName=dataSnapshot.getValue(String.class);
+                toolbarTitle.setText(projectName);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+        toolbarImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent homeIntent=new Intent(getApplicationContext(),AdminPage.class);
+                startActivity(homeIntent);
+            }
+        });
+
+
 
         button = (Button) findViewById(R.id.button);
 
@@ -96,7 +149,7 @@ public class PhotoDisplay extends AppCompatActivity {
         }
 
 
-        database = FirebaseDatabase.getInstance().getReference("Image");
+        database = FirebaseDatabase.getInstance().getReference("users").child(fbUser.getUid()).child("projects").child(pId).child("tasks").child(taskId);
         // Setup the RecyclerView
         photos = findViewById(R.id.photos);
         mLayoutManager = new LinearLayoutManager(this);

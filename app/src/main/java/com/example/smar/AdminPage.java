@@ -3,6 +3,7 @@ package com.example.smar;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +37,7 @@ public class AdminPage extends AppCompatActivity {
     TextView toolbarTitle;
     ImageView toolbarImage;
     String uid,b;
+    int a=0;
 
     @Override
     public void onBackPressed() {
@@ -45,10 +47,16 @@ public class AdminPage extends AppCompatActivity {
             finish();
 
         } else {
-            super.onBackPressed();
+            super.onBackPressed();}
 
 
-        }
+      /* if(a==0){
+           finish();
+           System.exit(0);
+       }else {
+           super.onBackPressed();
+       }*/
+
     }
 
 
