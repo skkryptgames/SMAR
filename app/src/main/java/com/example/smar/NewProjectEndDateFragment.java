@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,14 +44,18 @@ public class NewProjectEndDateFragment extends Fragment {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
+                if(i<bundle1.getInt("year") || i==bundle1.getInt("year")&&i1< bundle1.getInt("month") || i==bundle1.getInt("year")&&i1==bundle1.getInt("month")&&i2<bundle1.getInt("day")) {
+                    Toast.makeText(getContext(), "Project end date cannot be a lower value than project start date", Toast.LENGTH_SHORT).show();
+                    button.setEnabled(false);
+                }else {
+                    button.setEnabled(true);
+                    String month = monthFinder(i1);
+                    if (i2 > 0 && i2 < 10)
+                        endDate = month + " " + "0" + i2 + " " + i;
+                    else
+                        endDate = month + " " + i2 + " " + i;
 
-                String month = monthFinder(i1);
-                if(i2>0&&i2<10)
-                endDate=month+" "+"0"+i2+" "+i;
-                else
-                    endDate=month+" "+i2+" "+i;
-
-
+                }
             }
         });
 
@@ -69,6 +74,7 @@ public class NewProjectEndDateFragment extends Fragment {
                 Bundle bundle=new Bundle();
                 bundle.putString("projectTitle",bundle1.getString("projectTitle"));
                 bundle.putString("projectKey",bundle1.getString("projectKey"));
+                bundle.putString("projectStartDate",bundle1.getString("projectStartDate"));
                 fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.fragment_container,fragment);
                 fragmentTransaction.addToBackStack(null);

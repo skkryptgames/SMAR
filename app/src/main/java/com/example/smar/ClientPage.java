@@ -17,6 +17,7 @@ import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +57,7 @@ public class ClientPage extends AppCompatActivity {
     RecyclerView clientRecyclerView;
     ArrayList<Client> clientData = new ArrayList<>();
     ClientAdapter adapter;
+    ClientAdapterNoClick clientAdapter;
     ActionBar toolbar;
     FirebaseUser fbUser;
     TextView toolbarTitle;
@@ -64,6 +66,8 @@ public class ClientPage extends AppCompatActivity {
     static String pId;
     DatabaseReference reference;
     int notStarted=0,inProgress=0,delayed=0,completed=0;
+    String cProjectId,adminUid;
+    RelativeLayout relativeLayout;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -119,77 +123,147 @@ public class ClientPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_page);
 
-        //clientData=populateData();
-
-
+        relativeLayout=findViewById(R.id.fragment_container);
         title = getIntent().getStringExtra("title");
-        pId=getIntent().getStringExtra("projectId");
+        pId = getIntent().getStringExtra("projectId");
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.toolbar_layout);
         getSupportActionBar().getCustomView();
 
-        toolbar=getActionBar();
-        toolbarTitle=findViewById(R.id.smar_toolbar_title);
-        toolbarImage=findViewById(R.id.smar_toolbar_image);
-        toolbarImage.setVisibility(View.VISIBLE);
-        toolbarTitle.setText(title);
+        toolbar = getActionBar();
+        toolbarTitle = findViewById(R.id.smar_toolbar_title);
+        toolbarImage = findViewById(R.id.smar_toolbar_image);
         this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
-
-        toolbarImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent homeIntent=new Intent(getApplicationContext(),AdminPage.class);
-                startActivity(homeIntent);
-            }
-        });
-
-
         clientRecyclerView = findViewById(R.id.clientRecyclerView);
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(ClientPage.this,
                 LinearLayoutManager.VERTICAL, false);
         clientRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        clientRecyclerView.setVisibility(View.VISIBLE);
+        adapter = new ClientAdapter(ClientPage.this, clientData);
+        clientAdapter=new ClientAdapterNoClick(ClientPage.this,clientData);
 
-        uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
-         reference= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId).child("tasks");
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                clientData.clear();
 
-                for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                    String tName=dataSnapshot1.child("taskName").getValue(String.class);
-                    String date=dataSnapshot1.child("startDate").getValue(String.class);
-                    int days=dataSnapshot1.child("numOfDays").getValue(Integer.class);
-                    int image=dataSnapshot1.child("taskImage").getValue(Integer.class);
-                    String taskId=dataSnapshot1.child("taskId").getValue(String.class);
-                    int progress=dataSnapshot1.child("progress").getValue(Integer.class);
-                    String endDate=dateFinder(date,days);
-                    Client data=new Client(endDate,progress,tName,image,taskId);
-                    clientData.add(data);
-                    adapter.notifyDataSetChanged();
+
+        if(title==null){
+            clientRecyclerView.setAdapter(clientAdapter);
+
+            clientRecyclerView.addItemDecoration(new DividerItemDecoration(ClientPage.this,
+                    DividerItemDecoration.VERTICAL));
+
+
+
+            toolbarImage.setVisibility(View.GONE);
+
+            String number=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber().substring(3);
+
+            DatabaseReference reference=FirebaseDatabase.getInstance().getReference("clients").child(number);
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()){
+                        cProjectId=dataSnapshot.child("projectId").getValue(String.class);
+                        adminUid=dataSnapshot.child("adminUid").getValue(String.class);
+                        toolbarTitle.setText(dataSnapshot.child("projectName").getValue(String.class));
+
+                        DatabaseReference dareference= FirebaseDatabase.getInstance().getReference().child("users").child(adminUid).child("projects").child(cProjectId).child("tasks");
+                        dareference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                clientData.clear();
+
+                                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                    String tName = dataSnapshot1.child("taskName").getValue(String.class);
+                                    String date = dataSnapshot1.child("startDate").getValue(String.class);
+                                    int days = dataSnapshot1.child("numOfDays").getValue(Integer.class);
+                                    String image = dataSnapshot1.child("taskImage").getValue(String.class);
+                                    String taskId = dataSnapshot1.child("taskId").getValue(String.class);
+                                    int progress = dataSnapshot1.child("progress").getValue(Integer.class);
+                                    String endDate = dateFinder(date, days);
+                                    Client data = new Client(endDate, progress, tName, image, taskId);
+                                    clientData.add(data);
+                                    clientAdapter.notifyDataSetChanged();
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                        }else {
+                        Toast.makeText(getApplicationContext(),"Your project has not been added yet",Toast.LENGTH_SHORT).show();
+                    }
+
+
 
                 }
-                setProjectStatus();
-                tasksToBeDoneThisWeek();
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        adapter=new ClientAdapter(ClientPage.this,clientData);
-        clientRecyclerView.setAdapter(adapter);
-
-        clientRecyclerView.addItemDecoration(new DividerItemDecoration(ClientPage.this,
-                DividerItemDecoration.VERTICAL));
+                }
+            });
 
 
+        }
 
+        //clientData=populateData();
+
+else {
+            clientRecyclerView.setAdapter(adapter);
+
+            clientRecyclerView.addItemDecoration(new DividerItemDecoration(ClientPage.this,
+                    DividerItemDecoration.VERTICAL));
+
+            toolbarImage.setVisibility(View.VISIBLE);
+            toolbarTitle.setText(title);
+
+
+            toolbarImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent homeIntent = new Intent(getApplicationContext(), AdminPage.class);
+                    startActivity(homeIntent);
+                }
+            });
+
+
+
+
+            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            reference = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId).child("tasks");
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    clientData.clear();
+
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                        String tName = dataSnapshot1.child("taskName").getValue(String.class);
+                        String date = dataSnapshot1.child("startDate").getValue(String.class);
+                        int days = dataSnapshot1.child("numOfDays").getValue(Integer.class);
+                        String image = dataSnapshot1.child("taskImage").getValue(String.class);
+                        String taskId = dataSnapshot1.child("taskId").getValue(String.class);
+                        int progress = dataSnapshot1.child("progress").getValue(Integer.class);
+                        String endDate = dateFinder(date, days);
+                        Client data = new Client(endDate, progress, tName, image, taskId);
+                        clientData.add(data);
+                        adapter.notifyDataSetChanged();
+
+                    }
+                    setProjectStatus();
+                    tasksToBeDoneThisWeek();
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
+
+
+        }
     }
     public static String getProjectId(){
         String a=pId ;

@@ -1,6 +1,7 @@
 package com.example.smar;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,7 @@ public class CreateNewProjectFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!TextUtils.isEmpty(pName.getText().toString())&&!TextUtils.isEmpty(cName.getText().toString())&&!TextUtils.isEmpty(pNumber.getText().toString())){
                 try {
                     InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -77,6 +79,13 @@ public class CreateNewProjectFragment extends Fragment {
                                 map.put("thisWeekTasks","");
                                 reference.child(key).updateChildren(map);
 
+                                DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference("clients");
+                                HashMap<String,Object> map1=new HashMap<>();
+                                map1.put("projectId",key);
+                                map1.put("adminUid",uid);
+                                map1.put("projectName",pName.getText().toString());
+                                databaseReference.child(pNumber.getText().toString()).updateChildren(map1);
+
                                 Fragment fragment=new NewProjectStartDateFragment();
                                 FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
                                 //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
@@ -89,12 +98,7 @@ public class CreateNewProjectFragment extends Fragment {
                                 fragmentTransaction.addToBackStack("hello");
                                 fragmentTransaction.commit();
 
-
-
                         }
-
-
-
                     }
 
                     @Override
@@ -103,6 +107,9 @@ public class CreateNewProjectFragment extends Fragment {
                     }
                 });
 
+            }else {
+                    Toast.makeText(getContext(),"Please enter valid data",Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

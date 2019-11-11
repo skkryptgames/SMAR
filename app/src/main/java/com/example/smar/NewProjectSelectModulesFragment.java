@@ -38,12 +38,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import static android.content.ContentValues.TAG;
@@ -56,6 +60,7 @@ public class NewProjectSelectModulesFragment extends Fragment {
     String pTitle,uid;
     Bundle bundle1;
     DatabaseReference reference3;
+    RecyclerViewAdapter adapter;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -105,7 +110,8 @@ public class NewProjectSelectModulesFragment extends Fragment {
         View view= inflater.inflate(R.layout.select_modules_recyclerview,container,false);
         RecyclerView recyclerView=view.findViewById(R.id.smar_recyclerview_modules);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(new RecyclerViewAdapter(modulesList,getContext()));
+        adapter=new RecyclerViewAdapter(modulesList,getContext());
+        recyclerView.setAdapter(adapter);
         bundle1=getArguments();
         pTitle=bundle1.getString("projectTitle");
         ((AdminPage)getActivity()).toolbarTitle.setText(pTitle);
@@ -151,6 +157,7 @@ public class NewProjectSelectModulesFragment extends Fragment {
         @Override
         public RecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
+
             return new RecyclerViewHolder(inflater,parent);
         }
 
@@ -158,8 +165,12 @@ public class NewProjectSelectModulesFragment extends Fragment {
         public void onBindViewHolder(@NonNull final RecyclerViewHolder holder, final int position) {
             final ModulesPojo modulesPojo = detailsList.get(position);
             holder.moduleName.setText(detailsList.get(position).getName());
-            holder.moduleImage.setImageResource(detailsList.get(position).getImage());
+            Picasso.get().load(detailsList.get(position).getImage()).into(holder.moduleImage);
+            //holder.moduleImage.setImageResource(detailsList.get(position).getImage());
             holder.radioButtonImage.setForeground(modulesPojo.isSelected() ? getResources().getDrawable(R.drawable.ic_ellipse_45) : getResources().getDrawable(R.drawable.ic_panorama_fish_eye_black_24dp));
+            holder.numOfDays.setText(""+detailsList.get(position).getNumOfDays());
+            holder.startDate.setText(detailsList.get(position).getStartDate());
+
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -228,7 +239,33 @@ public class NewProjectSelectModulesFragment extends Fragment {
     }
 
     public void populateList(){
-        ModulesPojo one=new ModulesPojo(R.drawable.ic_021_house_plan,"Arm Chair","MMM DD YYYY",0);
+        modulesList.clear();
+
+        String pStartDate=bundle1.getString("projectStartDate");
+        DatabaseReference reference=FirebaseDatabase.getInstance().getReference("tasks");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot:dataSnapshot.getChildren()){
+                    String url=snapshot.child("downloadUrl").getValue(String.class);
+                    String name=snapshot.child("name").getValue(String.class);
+                    int delay=snapshot.child("startDelay").getValue(Integer.class);
+                    int days=snapshot.child("defaultDays").getValue(Integer.class);
+                    String date=dateFinder(pStartDate,delay);
+
+                    modulesList.add(new ModulesPojo(url,name,date,days));
+                    //Collections.sort(modulesList, (p1, p2) -> p1.getName().compareTo(p2.getName()));
+                    adapter.notifyDataSetChanged();
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+       /* ModulesPojo one=new ModulesPojo(R.drawable.ic_021_house_plan,"Arm Chair","MMM DD YYYY",0);
         ModulesPojo two=new ModulesPojo(R.drawable.ic_018_paint,"Curtains","MMM DD YYYY",0);
         ModulesPojo three=new ModulesPojo(R.drawable.ic_020_floor,"Floor","MMM DD YYYY",0);
         ModulesPojo four=new ModulesPojo(R.drawable.ic_023_tools,"Home Cinema","MMM DD YYYY",0);
@@ -237,7 +274,7 @@ public class NewProjectSelectModulesFragment extends Fragment {
         modulesList.add(two);
         modulesList.add(three);
         modulesList.add(four);
-        modulesList.add(five);
+        modulesList.add(five);*/
     }
     private String monthFinder(int a){
         String month;
@@ -303,5 +340,22 @@ public class NewProjectSelectModulesFragment extends Fragment {
 
         return true;
 
+    }
+    private String dateFinder(String a,int days){
+        Calendar f =new GregorianCalendar();
+        Date date1=new Date();
+        SimpleDateFormat sdf=new SimpleDateFormat("MMM dd yyyy");
+        try {
+            date1=sdf.parse(a);
+            System.out.println(date1);
+            f.setTime(date1);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        f.add(Calendar.DAY_OF_MONTH,days);
+        String newDate=sdf.format(f.getTime());
+
+        return newDate;
     }
 }

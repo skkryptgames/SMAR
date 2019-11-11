@@ -9,9 +9,9 @@
     android:layout_marginBottom="7dp">
 
     <ImageView
-        android:layout_width="wrap_content"
+        android:layout_width="48dp"
         android:id="@+id/ruler"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:src="@drawable/ic_023_tools"
         android:layout_weight="0.7">
 

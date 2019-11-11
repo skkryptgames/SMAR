@@ -35,7 +35,7 @@
         android:id="@+id/smar_textview_startdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Oct 31 2019"
+        android:text="MMM dd yyyy"
         android:textSize="14sp"
         android:textColor="@color/blue"
         android:layout_below="@+id/smar_textview_start"
@@ -65,7 +65,7 @@
                 android:maxLength="3"
                 android:inputType="number"
                 android:layout_below="@+id/smar_textview_numofdays"
-                android:text="4"
+                android:text="0"
                 android:textSize="14sp"
                 android:textColor="@color/blue"
                 />

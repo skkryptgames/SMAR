@@ -125,11 +125,25 @@ public class AuthenticationActivity extends AppCompatActivity {
                                             startActivity(clientIntent);
                                             finish();
                                         }
-                                    }else{
-                                        HashMap<String,Object> a=new HashMap<>();
-                                        a.put("phoneNumber",userNumber);
-                                        a.put("userType","admin");
-                                        reference.child(uid).child("info").updateChildren(a);
+                                    }else {
+                                        if (userNumber.equals("7060469656") || userNumber.equals("9900422344") || userNumber.equals("9900977344") || userNumber.equals("7981168985")) {
+                                            HashMap<String, Object> a = new HashMap<>();
+                                            a.put("phoneNumber", userNumber);
+                                            a.put("userType", "admin");
+                                            reference.child(uid).child("info").updateChildren(a);
+                                            Intent homeIntent = new Intent(AuthenticationActivity.this, AdminPage.class);
+                                            startActivity(homeIntent);
+                                            finish();
+
+                                        } else {
+                                            HashMap<String, Object> a = new HashMap<>();
+                                            a.put("phoneNumber", userNumber);
+                                            a.put("userType", "client");
+                                            reference.child(uid).child("info").updateChildren(a);
+                                            Intent clientIntent =new Intent(AuthenticationActivity.this,ClientPage.class);
+                                            startActivity(clientIntent);
+                                            finish();
+                                        }
                                     }
                                 }
 
