@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Calendar;
 import java.util.HashMap;
 
 public class NewProjectStartDateFragment extends Fragment {
@@ -23,6 +24,7 @@ public class NewProjectStartDateFragment extends Fragment {
     private Button button;
     Bundle bundle1;
     String startDate,uid;
+    Bundle bundle=new Bundle();
 
 
     @Nullable
@@ -42,6 +44,12 @@ public class NewProjectStartDateFragment extends Fragment {
         button=view.findViewById(R.id.smar_button_startdatenext);
         uid=FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+        Calendar calendar=Calendar.getInstance();
+        int thisYear = calendar.get(Calendar.YEAR);
+        int thisMonth = calendar.get(Calendar.MONTH);
+        int thisDay = calendar.get(Calendar.DAY_OF_MONTH);
+        startDate=monthFinder(thisMonth)+" "+thisDay+" "+thisYear;
+
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
@@ -51,6 +59,11 @@ public class NewProjectStartDateFragment extends Fragment {
                     startDate=month+" "+"0"+i2+" "+i;
                 else
                     startDate=month+" "+i2+" "+i;
+
+                bundle.putInt("year",i);
+                bundle.putInt("month",i1);
+                bundle.putInt("day",i2);
+
 
 
             }
@@ -69,9 +82,11 @@ public class NewProjectStartDateFragment extends Fragment {
                 Fragment fragment=new NewProjectEndDateFragment();
                 FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
                 //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
-                Bundle bundle=new Bundle();
+
                 bundle.putString("projectTitle",bundle1.getString("projectTitle"));
                 bundle.putString("projectKey",bundle1.getString("projectKey"));
+                bundle.putString("projectStartDate",startDate);
+
                 fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.fragment_container,fragment);
                 fragmentTransaction.addToBackStack(null);

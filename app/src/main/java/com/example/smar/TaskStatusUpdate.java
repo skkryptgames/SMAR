@@ -19,8 +19,12 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 
@@ -28,8 +32,8 @@ public class TaskStatusUpdate extends Fragment {
     Button button;
     TextView taskName,targetDate,photos,comments,numOfPhotos,numOfComments;
     ImageView taskImage,notStarted,inProgress,delayed,completed;
-    String moduleName,date,title,taskId,uId,pId;
-    int position,image;
+    String moduleName,date,title,taskId,uId,pId,image;
+    int position;
     DatabaseReference reference;
 
     @Nullable
@@ -44,7 +48,7 @@ public class TaskStatusUpdate extends Fragment {
         moduleName=bundle.getString("moduleName");
         date=bundle.getString("targetDate");
         position=bundle.getInt("position");
-        image=bundle.getInt("image");
+        image=bundle.getString("image");
         taskId=bundle.getString("taskId");
         pId=bundle.getString("projectId");
 
@@ -55,6 +59,7 @@ public class TaskStatusUpdate extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        taskImage=view.findViewById(R.id.smar_imageview_moduleimage);
         button=view.findViewById(R.id.smar_button_statusupdatedone);
         taskName=view.findViewById(R.id.smar_textview_modulename);
         targetDate=view.findViewById(R.id.smar_textview_targetdate);
@@ -69,6 +74,8 @@ public class TaskStatusUpdate extends Fragment {
         delayed=view.findViewById(R.id.smar_imageview_delayed);
         completed=view.findViewById(R.id.smar_imageview_completed);
         reference= FirebaseDatabase.getInstance().getReference("users").child(uId).child("projects").child(pId).child("tasks").child(taskId);
+
+        Picasso.get().load(image).into(taskImage);
 
         notStarted.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,20 +130,25 @@ public class TaskStatusUpdate extends Fragment {
         });
 
 
+        reference.child("images").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                long i= dataSnapshot.getChildrenCount();
+                numOfPhotos.setText(""+i);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-               /* Intent intent=new Intent(getContext(),ClientPage.class);
-                intent.putExtra("title",title);
-                intent.putExtra("projectId",pId);
-                startActivity(intent);*/
-               // ((ClientPage)getActivity()).clientData.clear();
                 ((ClientPage)getActivity()).onBackPressed();
-
-
-
             }
         });
 
@@ -159,6 +171,7 @@ public class TaskStatusUpdate extends Fragment {
                 Bundle bundle=new Bundle();
                 bundle.putString("projectId",pId);
                 bundle.putString("taskId",taskId);
+                bundle.putString("login","admin");
                 fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.fragment_container,fragment,"photoDisplay");
                 fragmentTransaction.addToBackStack(null);

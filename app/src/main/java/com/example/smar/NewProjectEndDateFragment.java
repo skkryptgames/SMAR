@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +17,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 public class NewProjectEndDateFragment extends Fragment {
@@ -40,17 +46,36 @@ public class NewProjectEndDateFragment extends Fragment {
         button=view.findViewById(R.id.smar_button_enddatenext);
         uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+        Calendar f =new GregorianCalendar();
+        Date date1=new Date();
+        SimpleDateFormat sdf=new SimpleDateFormat("MMM dd yyyy");
+        try {
+            date1=sdf.parse(bundle1.getString("projectStartDate"));
+            System.out.println(date1);
+            f.setTime(date1);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        f.add(Calendar.DAY_OF_MONTH,124);
+        calendarView.setDate(f.getTimeInMillis());
+        endDate=sdf.format(f.getTime());
+
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
+                if(i<bundle1.getInt("year") || i==bundle1.getInt("year")&&i1< bundle1.getInt("month") || i==bundle1.getInt("year")&&i1==bundle1.getInt("month")&&i2<bundle1.getInt("day")) {
+                    Toast.makeText(getContext(), "Project end date cannot be a lower value than project start date", Toast.LENGTH_SHORT).show();
+                    button.setEnabled(false);
+                }else {
+                    button.setEnabled(true);
+                    String month = monthFinder(i1);
+                    if (i2 > 0 && i2 < 10)
+                        endDate = month + " " + "0" + i2 + " " + i;
+                    else
+                        endDate = month + " " + i2 + " " + i;
 
-                String month = monthFinder(i1);
-                if(i2>0&&i2<10)
-                endDate=month+" "+"0"+i2+" "+i;
-                else
-                    endDate=month+" "+i2+" "+i;
-
-
+                }
             }
         });
 
@@ -69,6 +94,7 @@ public class NewProjectEndDateFragment extends Fragment {
                 Bundle bundle=new Bundle();
                 bundle.putString("projectTitle",bundle1.getString("projectTitle"));
                 bundle.putString("projectKey",bundle1.getString("projectKey"));
+                bundle.putString("projectStartDate",bundle1.getString("projectStartDate"));
                 fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.fragment_container,fragment);
                 fragmentTransaction.addToBackStack(null);

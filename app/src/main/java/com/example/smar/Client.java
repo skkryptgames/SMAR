@@ -6,7 +6,7 @@ public class Client {
     String date;
     int tick;
     String title;
-    int Images;
+    String Images;
     boolean isSelected=false;
     String taskId;
 
@@ -40,11 +40,11 @@ public class Client {
     public boolean isSelected() {
         return isSelected;
     }
-    public int getImages() {
+    public String getImages() {
         return Images;
     }
 
-    public Client(String date, int tick, String title, int images,String taskId) {
+    public Client(String date, int tick, String title, String images,String taskId) {
         this.date = date;
         this.tick = tick;
         this.title = title;

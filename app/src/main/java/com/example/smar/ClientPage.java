@@ -17,6 +17,7 @@ import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,60 +57,70 @@ public class ClientPage extends AppCompatActivity {
     RecyclerView clientRecyclerView;
     ArrayList<Client> clientData = new ArrayList<>();
     ClientAdapter adapter;
+    ClientAdapterNoClick clientAdapter;
     ActionBar toolbar;
     FirebaseUser fbUser;
     TextView toolbarTitle;
-    ImageView toolbarImage;
+    ImageView toolbarImage,signOut;
     String title,uid;
     static String pId;
     DatabaseReference reference;
     int notStarted=0,inProgress=0,delayed=0,completed=0;
+    String cProjectId,adminUid;
+    RelativeLayout relativeLayout;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         fbUser=FirebaseAuth.getInstance().getCurrentUser();
         if (requestCode == RC_IMAGE_GALLERY && resultCode == RESULT_OK) {
-            Uri uri = data.getData();
-            final StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-            final StorageReference imagesRef = FirebaseStorage.getInstance().getReference().child("images");
-            StorageReference userRef = imagesRef.child(fbUser.getUid());
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String filename = fbUser.getUid() + "_" + timeStamp;
-            StorageReference fileRef = userRef.child(filename);
+            if(data.getClipData()!=null){
+                int count=data.getClipData().getItemCount();
+                for(int i=0;i<count;i++){
+                    Uri uri=data.getClipData().getItemAt(i).getUri();
+                    //Uri uri = data.getData();
+                    final StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+                    final StorageReference imagesRef = FirebaseStorage.getInstance().getReference().child("images");
+                    StorageReference userRef = imagesRef.child(fbUser.getUid());
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                    String filename = fbUser.getUid() + "_" + timeStamp;
+                    StorageReference fileRef = userRef.child(filename);
 
-            UploadTask uploadTask = fileRef.putFile(uri);
+                    UploadTask uploadTask = fileRef.putFile(uri);
 
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                    Toast.makeText(getApplicationContext(), "Upload failed!\n" + exception.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    PhotoDisplay a=(PhotoDisplay)getSupportFragmentManager().findFragmentByTag("photoDisplay");
-                    String tId=a.taskId;
-                    final DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(fbUser.getUid()).child("projects").child(pId).child("tasks").child(tId);
-
-
-                    Task<Uri> task = taskSnapshot.getMetadata().getReference().getDownloadUrl();
-                    task.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
                         @Override
-                        public void onSuccess(Uri uri) {
-                            String downloadUrl = uri.toString();
-                            String key = database.child("images").push().getKey();
-                            AddPhotos addPhotos = new AddPhotos(key, fbUser.getUid(), downloadUrl);
-                            database.child("images").child(key).setValue(addPhotos);
-                            Log.i("Upload Finished",downloadUrl );
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            Toast.makeText(getApplicationContext(), "Upload failed!\n" + exception.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            PhotoDisplay a=(PhotoDisplay)getSupportFragmentManager().findFragmentByTag("photoDisplay");
+                            String tId=a.taskId;
+                            final DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(fbUser.getUid()).child("projects").child(pId).child("tasks").child(tId);
+
+
+                            Task<Uri> task = taskSnapshot.getMetadata().getReference().getDownloadUrl();
+                            task.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String downloadUrl = uri.toString();
+                                    String key = database.child("images").push().getKey();
+                                    AddPhotos addPhotos = new AddPhotos(key, fbUser.getUid(), downloadUrl);
+                                    database.child("images").child(key).setValue(addPhotos);
+                                    Log.i("Upload Finished",downloadUrl );
+                                }
+                            });
+
+
                         }
                     });
-
-
                 }
-            });
+            }
+
         }
     }
 
@@ -119,77 +130,160 @@ public class ClientPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_page);
 
-        //clientData=populateData();
-
-
+        relativeLayout=findViewById(R.id.fragment_container);
         title = getIntent().getStringExtra("title");
-        pId=getIntent().getStringExtra("projectId");
+        pId = getIntent().getStringExtra("projectId");
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.toolbar_layout);
         getSupportActionBar().getCustomView();
 
-        toolbar=getActionBar();
-        toolbarTitle=findViewById(R.id.smar_toolbar_title);
-        toolbarImage=findViewById(R.id.smar_toolbar_image);
-        toolbarImage.setVisibility(View.VISIBLE);
-        toolbarTitle.setText(title);
+        toolbar = getActionBar();
+        toolbarTitle = findViewById(R.id.smar_toolbar_title);
+        toolbarImage = findViewById(R.id.smar_toolbar_image);
+        signOut=findViewById(R.id.smar_imageview_signout);
         this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
-
-        toolbarImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent homeIntent=new Intent(getApplicationContext(),AdminPage.class);
-                startActivity(homeIntent);
-            }
-        });
-
-
         clientRecyclerView = findViewById(R.id.clientRecyclerView);
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(ClientPage.this,
                 LinearLayoutManager.VERTICAL, false);
         clientRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        clientRecyclerView.setVisibility(View.VISIBLE);
+        adapter = new ClientAdapter(ClientPage.this, clientData);
+        clientAdapter=new ClientAdapterNoClick(ClientPage.this,clientData);
 
-        uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
-         reference= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId).child("tasks");
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                clientData.clear();
 
-                for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                    String tName=dataSnapshot1.child("taskName").getValue(String.class);
-                    String date=dataSnapshot1.child("startDate").getValue(String.class);
-                    int days=dataSnapshot1.child("numOfDays").getValue(Integer.class);
-                    int image=dataSnapshot1.child("taskImage").getValue(Integer.class);
-                    String taskId=dataSnapshot1.child("taskId").getValue(String.class);
-                    int progress=dataSnapshot1.child("progress").getValue(Integer.class);
-                    String endDate=dateFinder(date,days);
-                    Client data=new Client(endDate,progress,tName,image,taskId);
-                    clientData.add(data);
-                    adapter.notifyDataSetChanged();
+
+        if(title==null){
+            signOut.setVisibility(View.VISIBLE);
+            signOut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    HashMap<String,Object> a =new HashMap<>();
+                    a.put("signInStatus","signedOut");
+                    FirebaseDatabase.getInstance().getReference("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("info").updateChildren(a);
+                    Intent intent=new Intent(getApplicationContext(),AuthenticationActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+            clientRecyclerView.setAdapter(clientAdapter);
+
+            clientRecyclerView.addItemDecoration(new DividerItemDecoration(ClientPage.this,
+                    DividerItemDecoration.VERTICAL));
+
+
+
+            toolbarImage.setVisibility(View.GONE);
+
+            String number=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber().substring(3);
+
+            DatabaseReference reference=FirebaseDatabase.getInstance().getReference("clients").child(number);
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()){
+                        cProjectId=dataSnapshot.child("projectId").getValue(String.class);
+                        adminUid=dataSnapshot.child("adminUid").getValue(String.class);
+                        toolbarTitle.setText(dataSnapshot.child("projectName").getValue(String.class));
+
+                        DatabaseReference dareference= FirebaseDatabase.getInstance().getReference().child("users").child(adminUid).child("projects").child(cProjectId).child("tasks");
+                        dareference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                clientData.clear();
+
+                                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                    String tName = dataSnapshot1.child("taskName").getValue(String.class);
+                                    String date = dataSnapshot1.child("startDate").getValue(String.class);
+                                    int days = dataSnapshot1.child("numOfDays").getValue(Integer.class);
+                                    String image = dataSnapshot1.child("taskImage").getValue(String.class);
+                                    String taskId = dataSnapshot1.child("taskId").getValue(String.class);
+                                    int progress = dataSnapshot1.child("progress").getValue(Integer.class);
+                                    String endDate = dateFinder(date, days);
+                                    Client data = new Client(endDate, progress, tName, image, taskId);
+                                    clientData.add(data);
+                                    clientAdapter.notifyDataSetChanged();
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                        }else {
+                        Toast.makeText(getApplicationContext(),"Your project has not been added yet",Toast.LENGTH_SHORT).show();
+                    }
+
+
 
                 }
-                setProjectStatus();
-                tasksToBeDoneThisWeek();
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        adapter=new ClientAdapter(ClientPage.this,clientData);
-        clientRecyclerView.setAdapter(adapter);
-
-        clientRecyclerView.addItemDecoration(new DividerItemDecoration(ClientPage.this,
-                DividerItemDecoration.VERTICAL));
+                }
+            });
 
 
+        }
 
+        //clientData=populateData();
+
+else {
+            clientRecyclerView.setAdapter(adapter);
+
+            clientRecyclerView.addItemDecoration(new DividerItemDecoration(ClientPage.this,
+                    DividerItemDecoration.VERTICAL));
+
+            toolbarImage.setVisibility(View.VISIBLE);
+            toolbarTitle.setText(title);
+
+
+            toolbarImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent homeIntent = new Intent(getApplicationContext(), AdminPage.class);
+                    startActivity(homeIntent);
+                }
+            });
+
+
+
+
+            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            reference = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId).child("tasks");
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    clientData.clear();
+
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                        String tName = dataSnapshot1.child("taskName").getValue(String.class);
+                        String date = dataSnapshot1.child("startDate").getValue(String.class);
+                        int days = dataSnapshot1.child("numOfDays").getValue(Integer.class);
+                        String image = dataSnapshot1.child("taskImage").getValue(String.class);
+                        String taskId = dataSnapshot1.child("taskId").getValue(String.class);
+                        int progress = dataSnapshot1.child("progress").getValue(Integer.class);
+                        String endDate = dateFinder(date, days);
+                        Client data = new Client(endDate, progress, tName, image, taskId);
+                        clientData.add(data);
+                        adapter.notifyDataSetChanged();
+
+                    }
+                    setProjectStatus();
+                    //tasksToBeDoneThisWeek();
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
+
+
+        }
     }
     public static String getProjectId(){
         String a=pId ;
@@ -217,7 +311,7 @@ public class ClientPage extends AppCompatActivity {
     public void setProjectStatus(){
 
         final DatabaseReference reference1= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId);
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 inProgress=delayed=completed=0;
@@ -235,7 +329,12 @@ public class ClientPage extends AppCompatActivity {
                     HashMap<String,Object> map=new HashMap<>();
                     map.put("progress",R.drawable.ic_checked);
                     reference1.updateChildren(map);
-                }else if(delayed>0){
+                }else if(completed>0&&completed<clientData.size()&&delayed==0){
+                    HashMap<String,Object> map=new HashMap<>();
+                    map.put("progress",R.drawable.ic_ellipse_45);
+                    reference1.updateChildren(map);
+                }
+                else if(delayed>0){
                     HashMap<String,Object> map=new HashMap<>();
                     map.put("progress",R.drawable.ic_ellipse_77);
                     reference1.updateChildren(map);

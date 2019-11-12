@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +24,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 
 public class AdminPage extends AppCompatActivity {
 
@@ -35,7 +41,7 @@ public class AdminPage extends AppCompatActivity {
     Toolbar toolBar;
     ActionBar toolbar;
     TextView toolbarTitle;
-    ImageView toolbarImage;
+    ImageView toolbarImage,signOut;
     String uid,b;
     int a=0;
 
@@ -68,7 +74,21 @@ public class AdminPage extends AppCompatActivity {
         toolbar=getActionBar();
         toolbarTitle=findViewById(R.id.smar_toolbar_title);
         toolbarImage=findViewById(R.id.smar_toolbar_image);
+        signOut=findViewById(R.id.smar_imageview_signout);
+        signOut.setVisibility(View.VISIBLE);
         this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
+
+        signOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                HashMap<String,Object> a =new HashMap<>();
+                a.put("signInStatus","signedOut");
+                FirebaseDatabase.getInstance().getReference("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("info").updateChildren(a);
+                Intent intent=new Intent(getApplicationContext(),AuthenticationActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
 
 
@@ -125,6 +145,7 @@ public class AdminPage extends AppCompatActivity {
                   String tasks=dataSnapshot1.child("thisWeekTasks").getValue(String.class);
 
                   mProjectListData.add(new ProjectList(pName,tasks,endDate,pId,progress));
+                  tasksToBeDoneThisWeek(pId);
                   adapter.notifyDataSetChanged();
 
                }
@@ -152,5 +173,57 @@ public class AdminPage extends AppCompatActivity {
             adapter.notifyDataSetChanged();
         }
 
+    }
+    public void tasksToBeDoneThisWeek(String a){
+        final DatabaseReference reference1= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(a);
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(a).child("tasks");
+        Calendar calendar=Calendar.getInstance();
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String b="";
+                for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                    String date=dataSnapshot1.child("startDate").getValue(String.class);
+                    if(checkDateInThisWeek(date)){
+
+                        b=b+", "+dataSnapshot1.child("taskName").getValue(String.class);
+
+                    }
+                }
+                b=b.replaceFirst("(?:, )+","");
+                HashMap<String,Object> map=new HashMap<>();
+                map.put("thisWeekTasks",b);
+                reference1.updateChildren(map);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+    public boolean checkDateInThisWeek(String date){
+        Date date2= new Date();
+        try {
+            date2 = new SimpleDateFormat("MMM dd yyyy").parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar c = Calendar.getInstance();
+        c.setFirstDayOfWeek(Calendar.MONDAY);
+
+        c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+
+        Date monday = c.getTime();
+
+        Date nextMonday= new Date(monday.getTime()+7*24*60*60*1000);
+
+        boolean isThisWeek = date2.after(monday) && date2.before(nextMonday);
+
+        return isThisWeek;
     }
 }

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 import static com.example.smar.ClientPage.getProjectId;
 
-public class ClientAdapter extends RecyclerView.Adapter<ClientAdapter.ClientViewHolder> {
+public class ClientAdapterNoClick extends RecyclerView.Adapter<ClientAdapterNoClick.ClientViewHolder> {
 
     private ArrayList<Client> titles;
     Context context;
@@ -29,28 +29,46 @@ public class ClientAdapter extends RecyclerView.Adapter<ClientAdapter.ClientView
 
 
 
-    public ClientAdapter(Context context , ArrayList<Client> titles) {
+    public ClientAdapterNoClick(Context context , ArrayList<Client> titles) {
         this.context=context;
         this.titles=titles;
 
     }
     @NonNull
     @Override
-    public ClientAdapter.ClientViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ClientAdapterNoClick.ClientViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.client_detail_page,
                 parent, false);
-        return new ClientAdapter.ClientViewHolder(view);
+        return new ClientAdapterNoClick.ClientViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ClientAdapter.ClientViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ClientAdapterNoClick.ClientViewHolder holder, final int position) {
 
         final Client client=titles.get(position);
         holder.design.setText(titles.get(position).getTitle());
         holder.targetDate.setText(titles.get(position).getDate());
         holder.panorama.setImageResource(titles.get(position).getTick());
-       // holder.panorama.setImageResource(client.isSelected() ? R.drawable.ic_checked : R.drawable.ic_panorama_fish_eye_black_24dp);
+        // holder.panorama.setImageResource(client.isSelected() ? R.drawable.ic_checked : R.drawable.ic_panorama_fish_eye_black_24dp);
         Picasso.get().load(titles.get(position).getImages()).into(holder.ruler);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment=new PhotoDisplay();
+                FragmentTransaction fragmentTransaction=((ClientPage)context).getSupportFragmentManager().beginTransaction();
+                //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
+                Bundle bundle=new Bundle();
+                bundle.putString("taskId",titles.get(position).getTaskId());
+                bundle.putString("projectId",((ClientPage)context).cProjectId);
+                bundle.putString("login","client");
+                bundle.putString("adminUid",((ClientPage)context).adminUid);
+                fragment.setArguments(bundle);
+                fragmentTransaction.replace(R.id.fragment_container,fragment,"photoDisplay");
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+        });
 
       /*  holder.panorama.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,29 +79,7 @@ public class ClientAdapter extends RecyclerView.Adapter<ClientAdapter.ClientView
             }
         });*/
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                Fragment fragment=new TaskStatusUpdate();
-                FragmentTransaction fragmentTransaction=((ClientPage)context).getSupportFragmentManager().beginTransaction();
-
-                Bundle bundle=new Bundle();
-
-                bundle.putString("taskId",titles.get(position).getTaskId());
-                bundle.putString("projectId",pId);
-                bundle.putString("moduleName",holder.design.getText().toString());
-                bundle.putString("targetDate",holder.targetDate.getText().toString());
-                bundle.putInt("position",position);
-                bundle.putString("image",titles.get(position).getImages());
-                fragment.setArguments(bundle);
-
-                fragmentTransaction.replace(R.id.fragment_container,fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-
-            }
-        });
 
     }
 
