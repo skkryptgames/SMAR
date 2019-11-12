@@ -171,6 +171,7 @@ public class TaskStatusUpdate extends Fragment {
                 Bundle bundle=new Bundle();
                 bundle.putString("projectId",pId);
                 bundle.putString("taskId",taskId);
+                bundle.putString("login","admin");
                 fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.fragment_container,fragment,"photoDisplay");
                 fragmentTransaction.addToBackStack(null);

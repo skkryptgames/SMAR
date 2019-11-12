@@ -17,6 +17,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 public class NewProjectEndDateFragment extends Fragment {
@@ -40,6 +45,21 @@ public class NewProjectEndDateFragment extends Fragment {
         calendarView=view.findViewById(R.id.smar_calenderview_calender);
         button=view.findViewById(R.id.smar_button_enddatenext);
         uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        Calendar f =new GregorianCalendar();
+        Date date1=new Date();
+        SimpleDateFormat sdf=new SimpleDateFormat("MMM dd yyyy");
+        try {
+            date1=sdf.parse(bundle1.getString("projectStartDate"));
+            System.out.println(date1);
+            f.setTime(date1);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        f.add(Calendar.DAY_OF_MONTH,124);
+        calendarView.setDate(f.getTimeInMillis());
+        endDate=sdf.format(f.getTime());
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override

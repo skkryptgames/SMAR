@@ -61,7 +61,7 @@ public class ClientPage extends AppCompatActivity {
     ActionBar toolbar;
     FirebaseUser fbUser;
     TextView toolbarTitle;
-    ImageView toolbarImage;
+    ImageView toolbarImage,signOut;
     String title,uid;
     static String pId;
     DatabaseReference reference;
@@ -74,46 +74,53 @@ public class ClientPage extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         fbUser=FirebaseAuth.getInstance().getCurrentUser();
         if (requestCode == RC_IMAGE_GALLERY && resultCode == RESULT_OK) {
-            Uri uri = data.getData();
-            final StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-            final StorageReference imagesRef = FirebaseStorage.getInstance().getReference().child("images");
-            StorageReference userRef = imagesRef.child(fbUser.getUid());
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String filename = fbUser.getUid() + "_" + timeStamp;
-            StorageReference fileRef = userRef.child(filename);
+            if(data.getClipData()!=null){
+                int count=data.getClipData().getItemCount();
+                for(int i=0;i<count;i++){
+                    Uri uri=data.getClipData().getItemAt(i).getUri();
+                    //Uri uri = data.getData();
+                    final StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+                    final StorageReference imagesRef = FirebaseStorage.getInstance().getReference().child("images");
+                    StorageReference userRef = imagesRef.child(fbUser.getUid());
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                    String filename = fbUser.getUid() + "_" + timeStamp;
+                    StorageReference fileRef = userRef.child(filename);
 
-            UploadTask uploadTask = fileRef.putFile(uri);
+                    UploadTask uploadTask = fileRef.putFile(uri);
 
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                    Toast.makeText(getApplicationContext(), "Upload failed!\n" + exception.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    PhotoDisplay a=(PhotoDisplay)getSupportFragmentManager().findFragmentByTag("photoDisplay");
-                    String tId=a.taskId;
-                    final DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(fbUser.getUid()).child("projects").child(pId).child("tasks").child(tId);
-
-
-                    Task<Uri> task = taskSnapshot.getMetadata().getReference().getDownloadUrl();
-                    task.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
                         @Override
-                        public void onSuccess(Uri uri) {
-                            String downloadUrl = uri.toString();
-                            String key = database.child("images").push().getKey();
-                            AddPhotos addPhotos = new AddPhotos(key, fbUser.getUid(), downloadUrl);
-                            database.child("images").child(key).setValue(addPhotos);
-                            Log.i("Upload Finished",downloadUrl );
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            Toast.makeText(getApplicationContext(), "Upload failed!\n" + exception.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            PhotoDisplay a=(PhotoDisplay)getSupportFragmentManager().findFragmentByTag("photoDisplay");
+                            String tId=a.taskId;
+                            final DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(fbUser.getUid()).child("projects").child(pId).child("tasks").child(tId);
+
+
+                            Task<Uri> task = taskSnapshot.getMetadata().getReference().getDownloadUrl();
+                            task.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String downloadUrl = uri.toString();
+                                    String key = database.child("images").push().getKey();
+                                    AddPhotos addPhotos = new AddPhotos(key, fbUser.getUid(), downloadUrl);
+                                    database.child("images").child(key).setValue(addPhotos);
+                                    Log.i("Upload Finished",downloadUrl );
+                                }
+                            });
+
+
                         }
                     });
-
-
                 }
-            });
+            }
+
         }
     }
 
@@ -133,6 +140,7 @@ public class ClientPage extends AppCompatActivity {
         toolbar = getActionBar();
         toolbarTitle = findViewById(R.id.smar_toolbar_title);
         toolbarImage = findViewById(R.id.smar_toolbar_image);
+        signOut=findViewById(R.id.smar_imageview_signout);
         this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
         clientRecyclerView = findViewById(R.id.clientRecyclerView);
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(ClientPage.this,
@@ -145,6 +153,18 @@ public class ClientPage extends AppCompatActivity {
 
 
         if(title==null){
+            signOut.setVisibility(View.VISIBLE);
+            signOut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    HashMap<String,Object> a =new HashMap<>();
+                    a.put("signInStatus","signedOut");
+                    FirebaseDatabase.getInstance().getReference("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("info").updateChildren(a);
+                    Intent intent=new Intent(getApplicationContext(),AuthenticationActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
             clientRecyclerView.setAdapter(clientAdapter);
 
             clientRecyclerView.addItemDecoration(new DividerItemDecoration(ClientPage.this,
@@ -250,7 +270,7 @@ else {
 
                     }
                     setProjectStatus();
-                    tasksToBeDoneThisWeek();
+                    //tasksToBeDoneThisWeek();
 
                 }
 
@@ -291,7 +311,7 @@ else {
     public void setProjectStatus(){
 
         final DatabaseReference reference1= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId);
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 inProgress=delayed=completed=0;
@@ -309,7 +329,12 @@ else {
                     HashMap<String,Object> map=new HashMap<>();
                     map.put("progress",R.drawable.ic_checked);
                     reference1.updateChildren(map);
-                }else if(delayed>0){
+                }else if(completed>0&&completed<clientData.size()&&delayed==0){
+                    HashMap<String,Object> map=new HashMap<>();
+                    map.put("progress",R.drawable.ic_ellipse_45);
+                    reference1.updateChildren(map);
+                }
+                else if(delayed>0){
                     HashMap<String,Object> map=new HashMap<>();
                     map.put("progress",R.drawable.ic_ellipse_77);
                     reference1.updateChildren(map);

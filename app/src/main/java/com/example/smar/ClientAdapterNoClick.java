@@ -52,6 +52,24 @@ public class ClientAdapterNoClick extends RecyclerView.Adapter<ClientAdapterNoCl
         // holder.panorama.setImageResource(client.isSelected() ? R.drawable.ic_checked : R.drawable.ic_panorama_fish_eye_black_24dp);
         Picasso.get().load(titles.get(position).getImages()).into(holder.ruler);
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment=new PhotoDisplay();
+                FragmentTransaction fragmentTransaction=((ClientPage)context).getSupportFragmentManager().beginTransaction();
+                //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
+                Bundle bundle=new Bundle();
+                bundle.putString("taskId",titles.get(position).getTaskId());
+                bundle.putString("projectId",((ClientPage)context).cProjectId);
+                bundle.putString("login","client");
+                bundle.putString("adminUid",((ClientPage)context).adminUid);
+                fragment.setArguments(bundle);
+                fragmentTransaction.replace(R.id.fragment_container,fragment,"photoDisplay");
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+        });
+
       /*  holder.panorama.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

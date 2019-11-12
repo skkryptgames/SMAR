@@ -9,6 +9,7 @@ import android.text.InputFilter;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     private String mVerificationId,userNumber;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         requestOtp = findViewById(R.id.requestOtp);
         otp = findViewById(R.id.otp);
         phoneNumber = findViewById(R.id.phoneNumber);
+        progressBar=findViewById(R.id.smar_progressbar);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -97,6 +100,10 @@ public class AuthenticationActivity extends AppCompatActivity {
                         String entered_OTP = otpEnter.getText().toString();
                         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, entered_OTP);
                         signInWithPhoneAuthCredential(credential);
+                        progressBar.setVisibility(View.VISIBLE);
+                        requestOtp.setEnabled(false);
+                        requestOtp.setBackgroundResource(R.drawable.inactive_button_background);
+
                     }
                 });
 
@@ -116,6 +123,9 @@ public class AuthenticationActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     if(dataSnapshot.exists()){
+                                        HashMap<String,Object> a=new HashMap<>();
+                                        a.put("signInStatus","signedIn");
+                                        reference.child(uid).child("info").updateChildren(a);
                                         if(dataSnapshot.child("info").child("userType").getValue(String.class).equals("admin")){
                                             Intent homeIntent = new Intent(AuthenticationActivity.this, AdminPage.class);
                                             startActivity(homeIntent);
@@ -128,6 +138,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                                     }else {
                                         if (userNumber.equals("7060469656") || userNumber.equals("9900422344") || userNumber.equals("9900977344") || userNumber.equals("7981168985")) {
                                             HashMap<String, Object> a = new HashMap<>();
+                                            a.put("signInStatus","signedIn");
                                             a.put("phoneNumber", userNumber);
                                             a.put("userType", "admin");
                                             reference.child(uid).child("info").updateChildren(a);
@@ -137,6 +148,7 @@ public class AuthenticationActivity extends AppCompatActivity {
 
                                         } else {
                                             HashMap<String, Object> a = new HashMap<>();
+                                            a.put("signInStatus","signedIn");
                                             a.put("phoneNumber", userNumber);
                                             a.put("userType", "client");
                                             reference.child(uid).child("info").updateChildren(a);

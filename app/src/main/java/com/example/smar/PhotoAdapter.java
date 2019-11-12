@@ -20,6 +20,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
 
     private ArrayList<AddPhotos> pics;
     private PhotoDisplay mActivity;
+    PhotoFullScreenDialog photoFullScreenDialog;
 
 
 
@@ -42,7 +43,16 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
     @Override
     public void onBindViewHolder(@NonNull PhotoAdapter.mViewHolder holder, int position) {
         AddPhotos addPhotos = (AddPhotos) pics.get(position);
-        Picasso.get().load(addPhotos.downloadUrl).into(holder.displayImage);
+        Picasso.get().load(addPhotos.downloadUrl).placeholder(R.drawable.image_background).into(holder.displayImage);
+
+        holder.displayImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                photoFullScreenDialog=new PhotoFullScreenDialog();
+                photoFullScreenDialog.showNow(mActivity.getFragmentManager(),"example");
+                Picasso.get().load(addPhotos.downloadUrl).into(photoFullScreenDialog.imageView);
+            }
+        });
 
   }
 
