@@ -54,6 +54,15 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
             }
         });
 
+        holder.displayImage.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                AddPhotos addPhotos1=new AddPhotos();
+                
+                return false;
+            }
+        });
+
   }
 
     @Override

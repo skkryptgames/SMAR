@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/splash_image_foreground"
+        android:scaleType="fitXY"/>
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true">
+    <TextView
+        android:id="@+id/smar_textview_appname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="smartnest"
+        android:textColor="#ffbd4a"
+        android:textSize="48sp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="interiors"
+        android:layout_centerHorizontal="true"
+        android:textColor="#d9d9d9"
+        android:textSize="38sp"
+        android:layout_below="@+id/smar_textview_appname"
+        />
+</RelativeLayout>
+
+</RelativeLayout>

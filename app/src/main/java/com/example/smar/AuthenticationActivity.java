@@ -136,7 +136,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                                             finish();
                                         }
                                     }else {
-                                        if (userNumber.equals("7060469656") || userNumber.equals("9900422344") || userNumber.equals("9900977344") || userNumber.equals("7981168985")) {
+                                        if (userNumber.equals("6304267978") || userNumber.equals("9900422344") || userNumber.equals("9900977344") || userNumber.equals("7981168985")) {
                                             HashMap<String, Object> a = new HashMap<>();
                                             a.put("signInStatus","signedIn");
                                             a.put("phoneNumber", userNumber);
@@ -169,6 +169,9 @@ public class AuthenticationActivity extends AppCompatActivity {
 
                         } else {
                             Toast.makeText(getApplicationContext(), "You have entered incorrect OTP", Toast.LENGTH_SHORT).show();
+                            requestOtp.setEnabled(true);
+                            requestOtp.setBackgroundResource(R.drawable.round_button);
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
                 });

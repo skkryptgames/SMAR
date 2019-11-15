@@ -76,6 +76,7 @@ public class ClientAdapter extends RecyclerView.Adapter<ClientAdapter.ClientView
                 bundle.putString("targetDate",holder.targetDate.getText().toString());
                 bundle.putInt("position",position);
                 bundle.putString("image",titles.get(position).getImages());
+                bundle.putInt("progress",titles.get(position).getTick());
                 fragment.setArguments(bundle);
 
                 fragmentTransaction.replace(R.id.fragment_container,fragment);
