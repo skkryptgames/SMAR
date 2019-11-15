@@ -60,9 +60,11 @@
         android:layout_marginTop="12dp"
         >
         <RelativeLayout
+            android:id="@+id/smar_layout_notstarted"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:alpha="0.5">
             <ImageView
                 android:id="@+id/smar_imageview_notstarted"
                 android:layout_width="wrap_content"
@@ -80,9 +82,11 @@
                 android:maxLines="2"/>
         </RelativeLayout>
         <RelativeLayout
+            android:id="@+id/smar_layout_inprogress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:alpha="0.5">
             <ImageView
                 android:id="@+id/smar_imageview_inprogress"
                 android:layout_width="wrap_content"
@@ -100,9 +104,11 @@
                 android:maxLines="2"/>
         </RelativeLayout>
         <RelativeLayout
+            android:id="@+id/smar_layout_delayed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:alpha="0.5">
             <ImageView
                 android:id="@+id/smar_imageview_delayed"
                 android:layout_width="wrap_content"
@@ -120,9 +126,11 @@
                 android:maxLines="2"/>
         </RelativeLayout>
         <RelativeLayout
+            android:id="@+id/smar_layout_completed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:alpha="0.5">
             <ImageView
                 android:id="@+id/smar_imageview_completed"
                 android:layout_width="20dp"

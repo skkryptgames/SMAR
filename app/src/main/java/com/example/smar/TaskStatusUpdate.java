@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,8 +34,9 @@ public class TaskStatusUpdate extends Fragment {
     TextView taskName,targetDate,photos,comments,numOfPhotos,numOfComments;
     ImageView taskImage,notStarted,inProgress,delayed,completed;
     String moduleName,date,title,taskId,uId,pId,image;
-    int position;
+    int position,cProgress,a=R.drawable.ic_panorama_fish_eye_black_24dp;
     DatabaseReference reference;
+    RelativeLayout not,in,del,comp;
 
     @Nullable
     @Override
@@ -51,6 +53,7 @@ public class TaskStatusUpdate extends Fragment {
         image=bundle.getString("image");
         taskId=bundle.getString("taskId");
         pId=bundle.getString("projectId");
+        cProgress=bundle.getInt("progress");
 
 
         return view;
@@ -59,6 +62,10 @@ public class TaskStatusUpdate extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        not=view.findViewById(R.id.smar_layout_notstarted);
+        in=view.findViewById(R.id.smar_layout_inprogress);
+        del=view.findViewById(R.id.smar_layout_delayed);
+        comp=view.findViewById(R.id.smar_layout_completed);
         taskImage=view.findViewById(R.id.smar_imageview_moduleimage);
         button=view.findViewById(R.id.smar_button_statusupdatedone);
         taskName=view.findViewById(R.id.smar_textview_modulename);
@@ -75,57 +82,63 @@ public class TaskStatusUpdate extends Fragment {
         completed=view.findViewById(R.id.smar_imageview_completed);
         reference= FirebaseDatabase.getInstance().getReference("users").child(uId).child("projects").child(pId).child("tasks").child(taskId);
 
+        if(cProgress==R.drawable.ic_panorama_fish_eye_black_24dp){
+            not.setAlpha(1f);
+        }else if (cProgress==R.drawable.ic_ellipse_45){
+            in.setAlpha(1f);
+        }else if(cProgress==R.drawable.ic_ellipse_77){
+            del.setAlpha(1f);
+        }else if(cProgress==R.drawable.ic_checked){
+            comp.setAlpha(1f);
+        }
+
         Picasso.get().load(image).into(taskImage);
 
-        notStarted.setOnClickListener(new View.OnClickListener() {
+        not.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                HashMap<String,Object> map=new HashMap<>();
-                map.put("progress",R.drawable.ic_panorama_fish_eye_black_24dp);
-                reference.updateChildren(map);
+                a=R.drawable.ic_panorama_fish_eye_black_24dp;
 
-                notStarted.setAlpha(0.4f);
-                inProgress.setAlpha(01f);
-                delayed.setAlpha(01f);
-                completed.setAlpha(01f);
+                not.setAlpha(1f);
+                in.setAlpha(0.5f);
+                del.setAlpha(0.5f);
+                comp.setAlpha(0.5f);
+
             }
         });
 
-        inProgress.setOnClickListener(new View.OnClickListener() {
+        in.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                HashMap<String,Object> map=new HashMap<>();
-                map.put("progress",R.drawable.ic_ellipse_45);
-                reference.updateChildren(map);
-                notStarted.setAlpha(01f);
-                inProgress.setAlpha(0.4f);
-                delayed.setAlpha(01f);
-                completed.setAlpha(01f);
+                a=R.drawable.ic_ellipse_45;
+
+                not.setAlpha(0.5f);
+                in.setAlpha(1f);
+                del.setAlpha(0.5f);
+                comp.setAlpha(0.5f);
             }
         });
 
-        delayed.setOnClickListener(new View.OnClickListener() {
+        del.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                HashMap<String,Object> map=new HashMap<>();
-                map.put("progress",R.drawable.ic_ellipse_77);
-                reference.updateChildren(map);
-                notStarted.setAlpha(01f);
-                inProgress.setAlpha(01f);
-                delayed.setAlpha(0.4f);
-                completed.setAlpha(01f);
+                a=R.drawable.ic_ellipse_77;
+
+                not.setAlpha(0.5f);
+                in.setAlpha(0.5f);
+                del.setAlpha(1f);
+                comp.setAlpha(0.5f);
             }
         });
-        completed.setOnClickListener(new View.OnClickListener() {
+        comp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                HashMap<String,Object> map=new HashMap<>();
-                map.put("progress",R.drawable.ic_checked);
-                reference.updateChildren(map);
-                notStarted.setAlpha(01f);
-                inProgress.setAlpha(01f);
-                delayed.setAlpha(01f);
-                completed.setAlpha(0.4f);
+                a=R.drawable.ic_checked;
+
+                not.setAlpha(0.5f);
+                in.setAlpha(0.5f);
+                del.setAlpha(0.5f);
+                comp.setAlpha(1f);
             }
         });
 
@@ -148,6 +161,10 @@ public class TaskStatusUpdate extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                HashMap<String,Object> map=new HashMap<>();
+                map.put("progress",a);
+                reference.updateChildren(map);
+
                 ((ClientPage)getActivity()).onBackPressed();
             }
         });
