@@ -1,6 +1,7 @@
 package com.example.smar;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -18,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -77,6 +79,35 @@ public class AdminPage extends AppCompatActivity {
         signOut=findViewById(R.id.smar_imageview_signout);
         signOut.setVisibility(View.VISIBLE);
         this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
+        toolbarImage.setImageResource(R.drawable.ic_060_tools_and_utensils_4);
+
+        toolbarImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(getApplicationContext(),ArchievedProjects.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects");
+
+
+        /*FirebaseDatabase.getInstance().getReference("archievedprojects").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+
+                    reference.child(dataSnapshot1.child("projectId").getValue(String.class)).removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });*/
 
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,7 +161,7 @@ public class AdminPage extends AppCompatActivity {
         mProjectListData.add(projectList3);*/
 
        uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
-       final DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects");
+
        reference.addValueEventListener(new ValueEventListener() {
            @Override
            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -139,12 +170,29 @@ public class AdminPage extends AppCompatActivity {
 
                for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
                   final String pName= dataSnapshot1.child("projectName").getValue(String.class);
-                 final String endDate=dataSnapshot1.child("endDate").getValue(String.class);
+                  final String endDate=dataSnapshot1.child("endDate").getValue(String.class);
                   final String pId=dataSnapshot1.child("projectId").getValue(String.class);
                   final int progress=dataSnapshot1.child("progress").getValue(Integer.class);
                   String tasks=dataSnapshot1.child("thisWeekTasks").getValue(String.class);
 
                   mProjectListData.add(new ProjectList(pName,tasks,endDate,pId,progress));
+                  if(progress==R.drawable.ic_checked && pId!=null){
+                      reference.child(pId).addListenerForSingleValueEvent(new ValueEventListener() {
+                          @Override
+                          public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                              FirebaseDatabase.getInstance().getReference("archievedprojects").child(uid).child(pId).setValue(dataSnapshot.getValue());
+
+
+                          }
+
+                          @Override
+                          public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                          }
+                      });
+                  }
+
                   tasksToBeDoneThisWeek(pId);
                   adapter.notifyDataSetChanged();
 

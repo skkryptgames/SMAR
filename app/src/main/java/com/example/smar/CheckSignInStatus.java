@@ -22,7 +22,24 @@ public class CheckSignInStatus extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen_layout);
 
+
+
        try{ uid=FirebaseAuth.getInstance().getCurrentUser().getUid();
+           DatabaseReference reference=FirebaseDatabase.getInstance().getReference("archievedprojects").child(uid);
+           DatabaseReference reference1=FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects");
+           reference.addListenerForSingleValueEvent(new ValueEventListener() {
+               @Override
+               public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                   for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                       reference1.child(dataSnapshot1.child("projectId").getValue(String.class)).removeValue();
+                   }
+               }
+
+               @Override
+               public void onCancelled(@NonNull DatabaseError databaseError) {
+
+               }
+           });
            DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference("users").child(uid);
            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                @Override
