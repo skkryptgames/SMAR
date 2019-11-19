@@ -22,10 +22,12 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:id="@+id/smar_scrollview"
+    android:paddingBottom="80dp"
     android:layout_below="@+id/smar_textview_createnewproject">
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         >
     <TextView
     android:id="@+id/smar_textview_projectname"
@@ -101,17 +103,17 @@
     </RelativeLayout>
 </ScrollView>
     <Button
-        android:fitsSystemWindows="true"
         android:id="@+id/smar_button_newprojectnext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         app:cornerRadius="20dp"
         android:text="Next"
+        android:paddingTop="-20dp"
         android:textColor="@color/white"
         android:gravity="center"
         android:textAlignment="center"

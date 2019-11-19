@@ -235,6 +235,7 @@ else {
                     DividerItemDecoration.VERTICAL));
 
             toolbarImage.setVisibility(View.VISIBLE);
+            toolbarImage.setImageResource(R.drawable.ic_home);
             toolbarTitle.setText(title);
 
 
@@ -311,7 +312,7 @@ else {
     public void setProjectStatus(){
 
         final DatabaseReference reference1= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId);
-        reference.addValueEventListener(new ValueEventListener() {
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 inProgress=delayed=completed=0;

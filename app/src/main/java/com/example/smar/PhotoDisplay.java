@@ -77,7 +77,7 @@ public class PhotoDisplay extends Fragment {
     RecyclerView.LayoutManager mLayoutManager;
     PhotoAdapter mAdapter;
     ArrayList<AddPhotos> pics = new ArrayList<>();
-    String pId,taskId,projectName,userId;
+    String pId, taskId, projectName, userId;
     ActionBar toolbar;
     TextView toolbarTitle;
     ImageView toolbarImage;
@@ -86,26 +86,26 @@ public class PhotoDisplay extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.activity_image_display,container,false);
+        View view = inflater.inflate(R.layout.activity_image_display, container, false);
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        Bundle bundle=getArguments();
+        Bundle bundle = getArguments();
 
         fbUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        pId=bundle.getString("projectId");
-        taskId=bundle.getString("taskId");
+        pId = bundle.getString("projectId");
+        taskId = bundle.getString("taskId");
 
 
         button = (Button) view.findViewById(R.id.button);
 
-        if(bundle.getString("login").equals("client")){
+        if (bundle.getString("login").equals("client")) {
             button.setVisibility(View.GONE);
-            userId=bundle.getString("adminUid");
+            userId = bundle.getString("adminUid");
 
         }
-        if(bundle.getString("login").equals("admin")){
+        if (bundle.getString("login").equals("admin")) {
             button.setVisibility(View.VISIBLE);
-            userId=fbUser.getUid();
+            userId = fbUser.getUid();
         }
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -119,10 +119,9 @@ public class PhotoDisplay extends Fragment {
         fbUser = FirebaseAuth.getInstance().getCurrentUser();
 
 
-
         database = FirebaseDatabase.getInstance().getReference("users").child(userId).child("projects").child(pId).child("tasks").child(taskId);
         // Setup the RecyclerView
-        photos =view.findViewById(R.id.photos);
+        photos = view.findViewById(R.id.photos);
         mLayoutManager = new LinearLayoutManager(getContext());
         photos.setHasFixedSize(true);
         photos.setLayoutManager(mLayoutManager);
@@ -135,7 +134,7 @@ public class PhotoDisplay extends Fragment {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
                 // A new image has been added, add it to the displayed list
-               final AddPhotos addPhotos = dataSnapshot.getValue(AddPhotos.class);
+                final AddPhotos addPhotos = dataSnapshot.getValue(AddPhotos.class);
                 // get the image DBUser
                 database.child("users/" + addPhotos.userId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -174,7 +173,7 @@ public class PhotoDisplay extends Fragment {
 
             }
         });
-return view;
+        return view;
     }
 
     public void uploadImage(View view) {
@@ -183,8 +182,9 @@ return view;
         } else {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-            startActivityForResult(Intent.createChooser(intent,"select_multi_images" ),RC_IMAGE_GALLERY);
+            startActivityForResult(Intent.createChooser(intent, "select_multi_images"), RC_IMAGE_GALLERY);
         }
     }
 
@@ -194,8 +194,9 @@ return view;
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                startActivityForResult(Intent.createChooser(intent,"select_multi_images" ),RC_IMAGE_GALLERY);
+                startActivityForResult(Intent.createChooser(intent, "select_multi_images"), RC_IMAGE_GALLERY);
             }
         }
     }
@@ -235,8 +236,7 @@ return view;
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 progressDialog.dismiss();
-                                //PhotoDisplay a = (PhotoDisplay) getFragmentManager().findFragmentByTag("photoDisplay");
-                                //String tId = a.taskId;
+
                                 final DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(fbUser.getUid()).child("projects").child(pId).child("tasks").child(taskId);
 
 
@@ -256,6 +256,50 @@ return view;
                             }
                         });
                     }
+                }else if(data.getData()!=null){
+                    Uri uri = data.getData();
+                    final StorageReference imagesRef = FirebaseStorage.getInstance().getReference().child("images"+System.currentTimeMillis());
+                    StorageReference userRef = imagesRef.child(fbUser.getUid());
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                    String filename = fbUser.getUid() + "_" + timeStamp;
+                    StorageReference fileRef = userRef.child(filename);
+
+                    UploadTask uploadTask = fileRef.putFile(uri);
+                    final ProgressDialog progressDialog = new ProgressDialog(getContext());
+                    progressDialog.setTitle("Uploading...");
+                    progressDialog.show();
+
+
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            Toast.makeText(getContext(), "Upload failed!\n" + exception.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+
+                            final DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(fbUser.getUid()).child("projects").child(pId).child("tasks").child(taskId);
+
+                            Task<Uri> task = taskSnapshot.getMetadata().getReference().getDownloadUrl();
+                            task.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String downloadUrl = uri.toString();
+                                    String key = database.child("images").push().getKey();
+                                    AddPhotos addPhotos = new AddPhotos(key, fbUser.getUid(), downloadUrl);
+                                    database.child("images").child(key).setValue(addPhotos);
+                                    Log.i("Upload Finished", downloadUrl);
+                                }
+                            });
+
+
+                        }
+                    });
+
                 }
             }
         }
