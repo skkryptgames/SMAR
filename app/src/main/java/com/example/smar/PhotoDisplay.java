@@ -76,7 +76,7 @@ public class PhotoDisplay extends Fragment {
     Button button;
     RecyclerView.LayoutManager mLayoutManager;
     PhotoAdapter mAdapter;
-    ArrayList<AddPhotos> pics = new ArrayList<>();
+    ArrayList<AddPhotos> pictures = new ArrayList<>();
     String pId,taskId,projectName,userId;
     ActionBar toolbar;
     TextView toolbarTitle;
@@ -126,7 +126,7 @@ public class PhotoDisplay extends Fragment {
         mLayoutManager = new LinearLayoutManager(getContext());
         photos.setHasFixedSize(true);
         photos.setLayoutManager(mLayoutManager);
-        mAdapter = new PhotoAdapter(this, pics);
+        mAdapter = new PhotoAdapter(this, pictures);
         photos.setAdapter(mAdapter);
 
         Query imagesQuery = database.child("images").orderByKey().limitToFirst(100);
@@ -135,13 +135,13 @@ public class PhotoDisplay extends Fragment {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
                 // A new image has been added, add it to the displayed list
-               final AddPhotos addPhotos = dataSnapshot.getValue(AddPhotos.class);
+              final  AddPhotos addPhotos = dataSnapshot.getValue(AddPhotos.class);
                 // get the image DBUser
                 database.child("users/" + addPhotos.userId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        DBUser DBUser = dataSnapshot.getValue(DBUser.class);
-                        addPhotos.DBUser = DBUser;
+                        DBUser dbUser = dataSnapshot.getValue(DBUser.class);
+                        addPhotos.dbUser = dbUser;
                         //images.add(image);
                         mAdapter.notifyDataSetChanged();
                     }
@@ -174,7 +174,7 @@ public class PhotoDisplay extends Fragment {
 
             }
         });
-return view;
+       return view;
     }
 
     public void uploadImage(View view) {

@@ -199,7 +199,7 @@ public class ClientPage extends AppCompatActivity {
                                     String taskId = dataSnapshot1.child("taskId").getValue(String.class);
                                     int progress = dataSnapshot1.child("progress").getValue(Integer.class);
                                     String endDate = dateFinder(date, days);
-                                    Client data = new Client(endDate, progress, tName, image, taskId);
+                                    Client data = new Client(endDate,progress, tName, image, taskId);
                                     clientData.add(data);
                                     clientAdapter.notifyDataSetChanged();
                                 }

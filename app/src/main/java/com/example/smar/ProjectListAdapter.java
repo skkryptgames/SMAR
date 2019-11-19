@@ -22,14 +22,14 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.MyViewHolder> {
-    private ArrayList<ProjectList> mProjectListData;
+    private ArrayList<ProjectList> mData;
     private Context mContext;
     boolean projectisStarted=true;
     boolean projectisDelayed=true;
     boolean projectisnotStarted=true;
 
-    public ProjectListAdapter(Context mContext, ArrayList<ProjectList> mProjectListData) {
-        this.mProjectListData=mProjectListData;
+    public ProjectListAdapter(Context mContext, ArrayList<ProjectList> mData) {
+        this.mData = mData;
         this.mContext=mContext;
 
     }
@@ -46,17 +46,17 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
 
-        holder.imageView.setImageResource(mProjectListData.get(position).getProgress());
-        holder.projectName.setText(mProjectListData.get(position).getProjectName());
-        holder.work.setText(mProjectListData.get(position).getWork());
-        holder.date.setText(mProjectListData.get(position).getDate());
+        holder.imageView.setImageResource(mData.get(position).getProgress());
+        holder.projectName.setText(mData.get(position).getProjectName());
+        holder.work.setText(mData.get(position).getWork());
+        holder.date.setText(mData.get(position).getDate());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ClientPage.class);
                 intent.putExtra("title", holder.projectName.getText().toString());
-                intent.putExtra("projectId",mProjectListData.get(position).getpId());
+                intent.putExtra("projectId",mData.get(position).getpId());
                 mContext.startActivity(intent);
             }
         });
@@ -64,7 +64,7 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
 
     @Override
     public int getItemCount() {
-        return mProjectListData.size();
+        return mData.size();
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {

@@ -1,10 +1,9 @@
 package com.example.smar;
 
-import android.content.Context;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -18,15 +17,15 @@ import java.util.ArrayList;
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>{
 
 
-    private ArrayList<AddPhotos> pics;
+    private ArrayList<AddPhotos> pictures;
     private PhotoDisplay mActivity;
     PhotoFullScreenDialog photoFullScreenDialog;
 
 
 
-  public PhotoAdapter(PhotoDisplay mActivity, ArrayList<AddPhotos> pics){
+  public PhotoAdapter(PhotoDisplay mActivity, ArrayList<AddPhotos> pictures){
       this.mActivity=mActivity;
-      this.pics=pics;
+      this.pictures=pictures;
 
   }
 
@@ -42,8 +41,17 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull PhotoAdapter.mViewHolder holder, int position) {
-        AddPhotos addPhotos = (AddPhotos) pics.get(position);
+        AddPhotos addPhotos = (AddPhotos) pictures.get(position);
         Picasso.get().load(addPhotos.downloadUrl).placeholder(R.drawable.image_background).into(holder.displayImage);
+        holder.check.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+                
+
+                return false;
+            }
+        });
 
         holder.displayImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +75,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
 
     @Override
     public int getItemCount() {
-        return pics.size();
+        return pictures.size();
     }
 
 
@@ -75,16 +83,18 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
     public static class mViewHolder extends RecyclerView.ViewHolder {
 
        ImageView displayImage;
+       CheckBox check;
 
         public mViewHolder(@NonNull View itemView) {
             super(itemView);
 
             displayImage = itemView.findViewById(R.id.imageDisplay);
+            check = itemView.findViewById(R.id.check);
         }
     }
 
     public void addPhoto(AddPhotos addPhotos) {
-        pics.add(0, addPhotos);
+        pictures.add(0, addPhotos);
         notifyDataSetChanged();
     }
 
