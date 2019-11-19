@@ -7,21 +7,28 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.ViewPropertyAnimatorListenerAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
 
     private static final int MSG_TYPE_LEFT = 0;
-    private static final int MSG_TYPE_RIGHT = 0;
+    private static final int MSG_TYPE_RIGHT = 1;
     private ArrayList<ChatMessage> mProjectListData;
     private Context mContext;
+    String userType;
+    int a;
 
-    private FirebaseUser fUser;
+
 
     public ChatAdapter(Context mContext, ArrayList<ChatMessage> mProjectListData) {
         this.mProjectListData = mProjectListData;
@@ -71,8 +78,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        fUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        return MSG_TYPE_LEFT;
+        if(mProjectListData.get(position).getuserType().equals("admin")){
+            a=MSG_TYPE_LEFT;
+        }else {
+            a=MSG_TYPE_RIGHT;
+        }
+        return a;
     }
 }

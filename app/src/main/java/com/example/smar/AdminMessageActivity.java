@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.concurrent.Callable;
 
 public class AdminMessageActivity extends Fragment {
 
@@ -39,6 +42,7 @@ public class AdminMessageActivity extends Fragment {
     private ArrayList<ChatMessage> messages = new ArrayList<>();
     String pId;
     String taskId;
+    String userType;
 
 
 
@@ -46,10 +50,18 @@ public class AdminMessageActivity extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.activity_admin_message, container, false);
+
         recyler_chat = view.findViewById(R.id.recycler_chat);
+
+        mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        recyler_chat.setLayoutManager(mLinearLayoutManager);
+
         recyler_chat.setHasFixedSize(true);
-        recyler_chat.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyler_chat.setAdapter(new ChatAdapter(getContext(), messages));
+
+
+        mAdapter = new ChatAdapter(getContext(), messages);
+        recyler_chat.setAdapter(mAdapter);
+
 
        return view;
 
@@ -65,7 +77,7 @@ public class AdminMessageActivity extends Fragment {
         taskId = bundle.getString("taskId");
 
 
-        readMessages();
+
 
         edittext_chat = view.findViewById(R.id.edittext_chat);
         button_chat_send = view.findViewById(R.id.button_chat_send);
@@ -73,42 +85,45 @@ public class AdminMessageActivity extends Fragment {
         ref = FirebaseDatabase.getInstance().getReference();
 
         mFirebaseAuth = FirebaseAuth.getInstance();
+        FirebaseDatabase.getInstance().getReference("users").child(mFirebaseUser.getUid()).child("info").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                userType=dataSnapshot.child("userType").getValue(String.class);
 
-        recyler_chat = view.findViewById(R.id.recycler_chat);
+            }
 
-        mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        recyler_chat.setLayoutManager(mLinearLayoutManager);
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-        recyler_chat.setHasFixedSize(true);
-
-
-        mAdapter = new ChatAdapter(getContext(), messages);
-        recyler_chat.setAdapter(mAdapter);
+            }
+        });
 
 
-        recyler_chat.addItemDecoration(new DividerItemDecoration(getContext(),
-                DividerItemDecoration.VERTICAL));
-
+        readMessages();
 
 
 
         button_chat_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendMessage(mFirebaseAuth.getCurrentUser().getPhoneNumber(),edittext_chat.getText().toString());
-                recyler_chat.setAdapter(mAdapter);
-
+                if(!TextUtils.isEmpty(edittext_chat.getText().toString())){
+                sendMessage(edittext_chat.getText().toString(),mFirebaseAuth.getCurrentUser().getPhoneNumber());
+                //recyler_chat.setAdapter(mAdapter);
+                edittext_chat.setText("");}
 
             }
 
             private void sendMessage(String message, String sender) {
 
-                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(mFirebaseAuth.getInstance().getUid()).child("projects").child(pId).child("tasks").child(taskId).child("comments");
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(mFirebaseUser.getUid()).child("projects").child(pId).child("tasks").child(taskId).child("comments");
 
 
                 String key = reference.push().getKey();
-                ChatMessage message1 = new ChatMessage(sender, message);
-                reference.child(key).setValue(message1);
+                HashMap<String,Object> a=new HashMap<>();
+                a.put("sender",sender);
+                a.put("message",message);
+                a.put("userType",userType);
+                reference.child(key).setValue(a);
             }
 
         });
@@ -116,14 +131,17 @@ public class AdminMessageActivity extends Fragment {
 
     private void readMessages() {
 
-        messages = new ArrayList<>();
-        ref = FirebaseDatabase.getInstance().getReference("users").child(mFirebaseAuth.getInstance().getUid()).child("projects").child(pId).child("tasks").child(taskId).child("comments");
+        ref = FirebaseDatabase.getInstance().getReference("users").child(mFirebaseUser.getUid()).child("projects").child(pId).child("tasks").child(taskId).child("comments");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                messages.clear();
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    ChatMessage chatMessage = snapshot.getValue(ChatMessage.class);
+                    String sender=snapshot.child("sender").getValue(String.class);
+                    String message=snapshot.child("message").getValue(String.class);
+                    String userId=snapshot.child("userType").getValue(String.class);
+                    ChatMessage chatMessage=new ChatMessage(message,sender,userId);
                     messages.add(chatMessage);
                     mAdapter.notifyDataSetChanged();
                 }
@@ -139,6 +157,12 @@ public class AdminMessageActivity extends Fragment {
 
 
     }
+
+
+
+
+
+
 
 
 }
