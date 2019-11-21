@@ -1,10 +1,10 @@
 package com.example.smar;
 
 import android.content.Context;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -18,17 +18,18 @@ import java.util.ArrayList;
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>{
 
 
-    private ArrayList<AddPhotos> pics;
-    private PhotoDisplay mActivity;
+    private ArrayList<AddPhotos> pictures;
+    private Context context;
     PhotoFullScreenDialog photoFullScreenDialog;
+    ClientPhotos clientPhotos;
 
 
 
-  public PhotoAdapter(PhotoDisplay mActivity, ArrayList<AddPhotos> pics){
-      this.mActivity=mActivity;
-      this.pics=pics;
+    public PhotoAdapter(Context context, ArrayList<AddPhotos> pictures){
+        this.context=context;
+        this.pictures=pictures;
 
-  }
+    }
 
     @NonNull
     @Override
@@ -42,15 +43,17 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull PhotoAdapter.mViewHolder holder, int position) {
-        AddPhotos addPhotos = (AddPhotos) pics.get(position);
+        AddPhotos addPhotos = (AddPhotos) pictures.get(position);
         Picasso.get().load(addPhotos.downloadUrl).placeholder(R.drawable.image_background).into(holder.displayImage);
+
 
         holder.displayImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 photoFullScreenDialog=new PhotoFullScreenDialog();
-                photoFullScreenDialog.showNow(mActivity.getFragmentManager(),"example");
+                photoFullScreenDialog.showNow(clientPhotos.getSupportFragmentManager(),"example");
                 Picasso.get().load(addPhotos.downloadUrl).into(photoFullScreenDialog.imageView);
+
             }
         });
 
@@ -58,23 +61,24 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
             @Override
             public boolean onLongClick(View view) {
                 AddPhotos addPhotos1=new AddPhotos();
-                
+
                 return false;
             }
         });
 
-  }
+    }
 
     @Override
     public int getItemCount() {
-        return pics.size();
+        return pictures.size();
     }
 
 
 
     public static class mViewHolder extends RecyclerView.ViewHolder {
 
-       ImageView displayImage;
+        ImageView displayImage;
+
 
         public mViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -84,7 +88,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
     }
 
     public void addPhoto(AddPhotos addPhotos) {
-        pics.add(0, addPhotos);
+        pictures.add(0, addPhotos);
         notifyDataSetChanged();
     }
 

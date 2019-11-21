@@ -17,7 +17,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import static com.example.smar.ClientPage.getProjectId;
+import static com.example.smar.AdminTasksPage.getProjectId;
+
 
 public class ArchievedProjectsTasksAdapter extends RecyclerView.Adapter<ArchievedProjectsTasksAdapter.ClientViewHolder> {
 

@@ -1,6 +1,7 @@
 package com.example.smar;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,7 +18,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import static com.example.smar.ClientPage.getProjectId;
+import static com.example.smar.AdminTasksPage.getProjectId;
 
 public class ClientAdapter extends RecyclerView.Adapter<ClientAdapter.ClientViewHolder> {
 
@@ -49,7 +49,7 @@ public class ClientAdapter extends RecyclerView.Adapter<ClientAdapter.ClientView
         holder.design.setText(titles.get(position).getTitle());
         holder.targetDate.setText(titles.get(position).getDate());
         holder.panorama.setImageResource(titles.get(position).getTick());
-       // holder.panorama.setImageResource(client.isSelected() ? R.drawable.ic_checked : R.drawable.ic_panorama_fish_eye_black_24dp);
+        // holder.panorama.setImageResource(client.isSelected() ? R.drawable.ic_checked : R.drawable.ic_panorama_fish_eye_black_24dp);
         Picasso.get().load(titles.get(position).getImages()).into(holder.ruler);
 
       /*  holder.panorama.setOnClickListener(new View.OnClickListener() {
@@ -65,24 +65,20 @@ public class ClientAdapter extends RecyclerView.Adapter<ClientAdapter.ClientView
             @Override
             public void onClick(View view) {
 
-                Fragment fragment=new TaskStatusUpdate();
-                FragmentTransaction fragmentTransaction=((ClientPage)context).getSupportFragmentManager().beginTransaction();
+                Intent intent=new Intent(context,TaskStatusUpdate.class);
 
-                Bundle bundle=new Bundle();
 
-                bundle.putString("taskId",titles.get(position).getTaskId());
-                bundle.putString("projectId",pId);
-                bundle.putString("moduleName",holder.design.getText().toString());
-                bundle.putString("targetDate",holder.targetDate.getText().toString());
-                bundle.putInt("position",position);
-                bundle.putString("image",titles.get(position).getImages());
-                bundle.putInt("progress",titles.get(position).getTick());
-                fragment.setArguments(bundle);
+                intent.putExtra("taskId",titles.get(position).getTaskId());
+                intent.putExtra("projectId",pId);
+                intent.putExtra("moduleName",holder.design.getText().toString());
+                intent.putExtra("targetDate",holder.targetDate.getText().toString());
+                intent.putExtra("position",position);
+                intent.putExtra("image",titles.get(position).getImages());
+                intent.putExtra("progress",titles.get(position).getTick());
+                intent.putExtra("userId", AdminTasksPage.uId);
+                intent.putExtra("title",((AdminTasksPage)context).title);
 
-                fragmentTransaction.replace(R.id.fragment_container,fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-
+                context.startActivity(intent);
             }
         });
 
