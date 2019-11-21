@@ -97,8 +97,9 @@ public class ArchievedProjects extends AppCompatActivity {
                     final String pId=dataSnapshot1.child("projectId").getValue(String.class);
                     final int progress=dataSnapshot1.child("progress").getValue(Integer.class);
                     String tasks=dataSnapshot1.child("thisWeekTasks").getValue(String.class);
+                    String uid=dataSnapshot1.child("userId").getValue(String.class);
 
-                    archivedProjects.add(new ProjectList(pName,tasks,endDate,pId,progress));
+                    archivedProjects.add(new ProjectList(pName,tasks,endDate,pId,progress,uid));
                     adapter.notifyDataSetChanged();
                 }
 

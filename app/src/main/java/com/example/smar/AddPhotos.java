@@ -12,7 +12,7 @@ public class AddPhotos {
 
     // these properties will not be saved to the database
     @Exclude
-    public DBUser DBUser;
+    public DBUser dbUser;
 
 
     public AddPhotos(){

@@ -10,16 +10,13 @@ public class Client {
     boolean isSelected=false;
     String taskId;
 
-    public String getTaskId() {
-        return taskId;
-    }
 
-    public void setTaskId(String taskId) {
+    public Client(String date, int tick, String title, String images, String taskId) {
+        this.date = date;
+        this.tick = tick;
+        this.title = title;
+        Images = images;
         this.taskId = taskId;
-    }
-
-    public Client(){
-
     }
 
     public String getDate() {
@@ -34,21 +31,15 @@ public class Client {
         return title;
     }
 
-    public void setSelected(boolean selected) {
-        isSelected = selected;
-    }
-    public boolean isSelected() {
-        return isSelected;
-    }
     public String getImages() {
         return Images;
     }
 
-    public Client(String date, int tick, String title, String images,String taskId) {
-        this.date = date;
-        this.tick = tick;
-        this.title = title;
-        this.Images = images;
-        this.taskId=taskId;
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public String getTaskId() {
+        return taskId;
     }
 }

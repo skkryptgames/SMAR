@@ -2,7 +2,6 @@ package com.example.smar;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,83 +21,66 @@ public class CheckSignInStatus extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen_layout);
 
+        try{ uid=FirebaseAuth.getInstance().getCurrentUser().getUid();
+            DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference("users").child(uid);
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()){
+                        DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("info");
+                        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.child("userType").getValue(String.class).equals("admin")) {
 
+                                    if (dataSnapshot.child("signInStatus").getValue(String.class).equals("signedIn")) {
+                                        Intent intent = new Intent(getApplicationContext(), AdminPage.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Intent intent = new Intent(getApplicationContext(), AuthenticationActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                }
+                                else {
+                                    if (dataSnapshot.child("signInStatus").getValue(String.class).equals("signedIn")) {
+                                        Intent intent = new Intent(getApplicationContext(), ClientPage.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Intent intent = new Intent(getApplicationContext(), AuthenticationActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
 
-       try{ uid=FirebaseAuth.getInstance().getCurrentUser().getUid();
-           DatabaseReference reference=FirebaseDatabase.getInstance().getReference("archievedprojects").child(uid);
-           DatabaseReference reference1=FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects");
-           reference.addListenerForSingleValueEvent(new ValueEventListener() {
-               @Override
-               public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                   for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                       reference1.child(dataSnapshot1.child("projectId").getValue(String.class)).removeValue();
-                   }
-               }
+                                }
+                            }
 
-               @Override
-               public void onCancelled(@NonNull DatabaseError databaseError) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-               }
-           });
-           DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference("users").child(uid);
-           databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-               @Override
-               public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                   if(dataSnapshot.exists()){
-                       DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("info");
-                       reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                           @Override
-                           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                               if(dataSnapshot.child("userType").getValue(String.class).equals("admin")) {
+                            }
+                        });
 
-                                   if (dataSnapshot.child("signInStatus").getValue(String.class).equals("signedIn")) {
-                                       Intent intent = new Intent(getApplicationContext(), AdminPage.class);
-                                       startActivity(intent);
-                                       finish();
-                                   } else {
-                                       Intent intent = new Intent(getApplicationContext(), AuthenticationActivity.class);
-                                       startActivity(intent);
-                                       finish();
-                                   }
-                               }
-                               else {
-                                   if (dataSnapshot.child("signInStatus").getValue(String.class).equals("signedIn")) {
-                                       Intent intent = new Intent(getApplicationContext(), ClientPage.class);
-                                       startActivity(intent);
-                                       finish();
-                                   } else {
-                                       Intent intent = new Intent(getApplicationContext(), AuthenticationActivity.class);
-                                       startActivity(intent);
-                                       finish();
-                                   }
+                    }else {
+                        Intent intent=new Intent(getApplicationContext(),AuthenticationActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
 
-                               }
-                           }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                           @Override
-                           public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                           }
-                       });
-
-                   }else {
-                       Intent intent=new Intent(getApplicationContext(),AuthenticationActivity.class);
-                       startActivity(intent);
-                       finish();
-                   }
-               }
-
-               @Override
-               public void onCancelled(@NonNull DatabaseError databaseError) {
-
-               }
-           });
-       }
-       catch (NullPointerException e){
-           Intent intent=new Intent(getApplicationContext(),AuthenticationActivity.class);
-           startActivity(intent);
-           finish();
-       }
+                }
+            });
+        }
+        catch (NullPointerException e){
+            Intent intent=new Intent(getApplicationContext(),AuthenticationActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
 
 
