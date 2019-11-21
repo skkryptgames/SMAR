@@ -67,6 +67,7 @@ public class ClientAdapterNoClick extends RecyclerView.Adapter<ClientAdapterNoCl
                 fragmentTransaction.replace(R.id.fragment_container,fragment,"photoDisplay");
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
+                ((ClientPage)context).signOut.setImageResource(R.drawable.ic_141_chat_1);
             }
         });
 

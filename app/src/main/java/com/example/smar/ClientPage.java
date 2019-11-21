@@ -51,6 +51,8 @@ public class ClientPage extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        if(title==null)
+            signOut.setImageResource(R.drawable.signout_demo);
     }
 
 
@@ -68,6 +70,7 @@ public class ClientPage extends AppCompatActivity {
     int notStarted=0,inProgress=0,delayed=0,completed=0;
     String cProjectId,adminUid;
     RelativeLayout relativeLayout;
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
