@@ -53,6 +53,7 @@ public class AdminPage extends AppCompatActivity {
 
         } else {
             super.onBackPressed();
+            signOut.setImageResource(R.drawable.signout_demo);
         }
 
 
@@ -73,8 +74,10 @@ public class AdminPage extends AppCompatActivity {
 
         toolbar=getActionBar();
         toolbarTitle=findViewById(R.id.smar_toolbar_title);
+        toolbarTitle.setText("smartnest");
         toolbarImage=findViewById(R.id.smar_toolbar_image);
         signOut=findViewById(R.id.smar_imageview_signout);
+        signOut.setImageResource(R.drawable.signout_demo);
         signOut.setVisibility(View.VISIBLE);
         this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
 
@@ -143,8 +146,10 @@ public class AdminPage extends AppCompatActivity {
                   final String pId=dataSnapshot1.child("projectId").getValue(String.class);
                   final int progress=dataSnapshot1.child("progress").getValue(Integer.class);
                   String tasks=dataSnapshot1.child("thisWeekTasks").getValue(String.class);
+                  String uid=dataSnapshot1.child("userId").getValue(String.class);
 
-                  mProjectListData.add(new ProjectList(pName,tasks,endDate,pId,progress));
+
+                  mProjectListData.add(new ProjectList(pName,tasks,endDate,pId,progress,uid));
                   tasksToBeDoneThisWeek(pId);
                   adapter.notifyDataSetChanged();
 

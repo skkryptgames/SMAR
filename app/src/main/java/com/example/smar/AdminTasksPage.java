@@ -3,7 +3,6 @@ package com.example.smar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,12 +12,10 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,23 +44,19 @@ import java.util.HashMap;
 import static com.example.smar.PhotoDisplay.RC_IMAGE_GALLERY;
 
 
-public class ClientPage extends AppCompatActivity {
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
+public class AdminTasksPage extends AppCompatActivity {
 
 
     RecyclerView clientRecyclerView;
     ArrayList<Client> clientData = new ArrayList<>();
-    ClientAdapter adapter;
+    AdminTasksAdapter adapter;
     ClientAdapterNoClick clientAdapter;
     ActionBar toolbar;
     FirebaseUser fbUser;
     TextView toolbarTitle;
     ImageView toolbarImage,signOut;
-    String title,uid;
-    static String pId;
+    String title;
+    static String pId,uId;
     DatabaseReference reference;
     int notStarted=0,inProgress=0,delayed=0,completed=0;
     String cProjectId,adminUid;
@@ -133,6 +126,8 @@ public class ClientPage extends AppCompatActivity {
         relativeLayout=findViewById(R.id.fragment_container);
         title = getIntent().getStringExtra("title");
         pId = getIntent().getStringExtra("projectId");
+        uId=getIntent().getStringExtra("userId");
+
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.toolbar_layout);
         getSupportActionBar().getCustomView();
@@ -143,99 +138,26 @@ public class ClientPage extends AppCompatActivity {
         signOut=findViewById(R.id.smar_imageview_signout);
         this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
         clientRecyclerView = findViewById(R.id.clientRecyclerView);
-        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(ClientPage.this,
+        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(AdminTasksPage.this,
                 LinearLayoutManager.VERTICAL, false);
         clientRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        adapter = new ClientAdapter(ClientPage.this, clientData);
-        clientAdapter=new ClientAdapterNoClick(ClientPage.this,clientData);
+        adapter = new AdminTasksAdapter(AdminTasksPage.this, clientData);
 
 
 
-        if(title==null){
-            signOut.setVisibility(View.VISIBLE);
-            signOut.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    HashMap<String,Object> a =new HashMap<>();
-                    a.put("signInStatus","signedOut");
-                    FirebaseDatabase.getInstance().getReference("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("info").updateChildren(a);
-                    Intent intent=new Intent(getApplicationContext(),AuthenticationActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-            });
-            clientRecyclerView.setAdapter(clientAdapter);
-
-            clientRecyclerView.addItemDecoration(new DividerItemDecoration(ClientPage.this,
-                    DividerItemDecoration.VERTICAL));
 
 
 
-            toolbarImage.setVisibility(View.GONE);
 
-            String number=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber().substring(3);
-
-            DatabaseReference reference=FirebaseDatabase.getInstance().getReference("clients").child(number);
-            reference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists()){
-                        cProjectId=dataSnapshot.child("projectId").getValue(String.class);
-                        adminUid=dataSnapshot.child("adminUid").getValue(String.class);
-                        toolbarTitle.setText(dataSnapshot.child("projectName").getValue(String.class));
-
-                        DatabaseReference dareference= FirebaseDatabase.getInstance().getReference().child("users").child(adminUid).child("projects").child(cProjectId).child("tasks");
-                        dareference.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                clientData.clear();
-
-                                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                                    String tName = dataSnapshot1.child("taskName").getValue(String.class);
-                                    String date = dataSnapshot1.child("startDate").getValue(String.class);
-                                    int days = dataSnapshot1.child("numOfDays").getValue(Integer.class);
-                                    String image = dataSnapshot1.child("taskImage").getValue(String.class);
-                                    String taskId = dataSnapshot1.child("taskId").getValue(String.class);
-                                    int progress = dataSnapshot1.child("progress").getValue(Integer.class);
-                                    String endDate = dateFinder(date, days);
-                                    Client data = new Client(endDate,progress, tName, image, taskId);
-                                    clientData.add(data);
-                                    clientAdapter.notifyDataSetChanged();
-                                }
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                        }else {
-                        Toast.makeText(getApplicationContext(),"Your project has not been added yet",Toast.LENGTH_SHORT).show();
-                    }
-
-
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-
-        }
-
-        //clientData=populateData();
-
-else {
             clientRecyclerView.setAdapter(adapter);
 
-            clientRecyclerView.addItemDecoration(new DividerItemDecoration(ClientPage.this,
+            clientRecyclerView.addItemDecoration(new DividerItemDecoration(AdminTasksPage.this,
                     DividerItemDecoration.VERTICAL));
 
             toolbarImage.setVisibility(View.VISIBLE);
             toolbarTitle.setText(title);
+            signOut.setImageResource(R.drawable.ic_icn_scribe_dark);
 
 
             toolbarImage.setOnClickListener(new View.OnClickListener() {
@@ -249,8 +171,8 @@ else {
 
 
 
-            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            reference = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId).child("tasks");
+
+            reference = FirebaseDatabase.getInstance().getReference().child("users").child(uId).child("projects").child(pId).child("tasks");
             reference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -284,7 +206,7 @@ else {
 
 
         }
-    }
+
     public static String getProjectId(){
         String a=pId ;
     return a;
@@ -310,7 +232,7 @@ else {
 
     public void setProjectStatus(){
 
-        final DatabaseReference reference1= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId);
+        final DatabaseReference reference1= FirebaseDatabase.getInstance().getReference().child("users").child(uId).child("projects").child(pId);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -358,7 +280,7 @@ else {
 
     public void tasksToBeDoneThisWeek(){
         String a="";
-        final DatabaseReference reference1= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(pId);
+        final DatabaseReference reference1= FirebaseDatabase.getInstance().getReference().child("users").child(uId).child("projects").child(pId);
         Calendar calendar=Calendar.getInstance();
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

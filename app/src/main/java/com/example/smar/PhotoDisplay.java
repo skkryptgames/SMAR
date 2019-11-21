@@ -2,29 +2,22 @@ package com.example.smar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,17 +40,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -81,6 +70,7 @@ public class PhotoDisplay extends Fragment {
     ActionBar toolbar;
     TextView toolbarTitle;
     ImageView toolbarImage;
+    Bundle bundle;
 
 
     @Nullable
@@ -88,7 +78,7 @@ public class PhotoDisplay extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.activity_image_display,container,false);
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        Bundle bundle=getArguments();
+         bundle=getArguments();
 
         fbUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -101,11 +91,30 @@ public class PhotoDisplay extends Fragment {
         if(bundle.getString("login").equals("client")){
             button.setVisibility(View.GONE);
             userId=bundle.getString("adminUid");
+            ((ClientTasks)getActivity()).signOut.setImageResource(R.drawable.ic_141_chat_1);
+            ((ClientTasks)getActivity()).signOut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Fragment fragment=new AdminMessageActivity();
+                    FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
+                    //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
+                    Bundle bundle=new Bundle();
+                    bundle.putString("taskId",taskId);
+                    bundle.putString("projectId",pId);
+                    bundle.putString("adminUid",userId);
+                    bundle.putString("login","client");
+                    fragment.setArguments(bundle);
+                    fragmentTransaction.replace(R.id.fragment_container,fragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                }
+            });
+
 
         }
         if(bundle.getString("login").equals("admin")){
             button.setVisibility(View.VISIBLE);
-            userId=fbUser.getUid();
+            userId=bundle.getString("userId");
         }
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -126,13 +135,15 @@ public class PhotoDisplay extends Fragment {
         mLayoutManager = new LinearLayoutManager(getContext());
         photos.setHasFixedSize(true);
         photos.setLayoutManager(mLayoutManager);
-        mAdapter = new PhotoAdapter(this, pictures);
+        mAdapter = new PhotoAdapter(getContext(), pictures);
         photos.setAdapter(mAdapter);
 
         Query imagesQuery = database.child("images").orderByKey().limitToFirst(100);
+        pictures.clear();
         imagesQuery.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
 
                 // A new image has been added, add it to the displayed list
               final  AddPhotos addPhotos = dataSnapshot.getValue(AddPhotos.class);
@@ -151,7 +162,7 @@ public class PhotoDisplay extends Fragment {
 
                     }
                 });
-                mAdapter.addPhoto(addPhotos);
+                pictures.add(addPhotos);
             }
 
             @Override

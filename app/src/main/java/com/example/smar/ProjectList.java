@@ -8,13 +8,23 @@ public class ProjectList {
     String date;
     String pId;
     int progress;
+    String uId;
 
-    public ProjectList(String projectName, String work, String date, String pId, int progress) {
+    public String getuId() {
+        return uId;
+    }
+
+    public void setuId(String uId) {
+        this.uId = uId;
+    }
+
+    public ProjectList(String projectName, String work, String date, String pId, int progress, String uId) {
         this.projectName = projectName;
         this.work = work;
         this.date = date;
         this.pId = pId;
         this.progress = progress;
+        this.uId=uId;
     }
 
     public String getProjectName() {

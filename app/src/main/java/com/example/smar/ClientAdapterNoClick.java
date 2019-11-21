@@ -1,6 +1,7 @@
 package com.example.smar;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,13 +18,13 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import static com.example.smar.ClientPage.getProjectId;
+import static com.example.smar.AdminTasksPage.getProjectId;
 
 public class ClientAdapterNoClick extends RecyclerView.Adapter<ClientAdapterNoClick.ClientViewHolder> {
 
     private ArrayList<Client> titles;
     Context context;
-    String pId=getProjectId();
+
 
 
 
@@ -55,18 +55,14 @@ public class ClientAdapterNoClick extends RecyclerView.Adapter<ClientAdapterNoCl
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment fragment=new PhotoDisplay();
-                FragmentTransaction fragmentTransaction=((ClientPage)context).getSupportFragmentManager().beginTransaction();
-                //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
-                Bundle bundle=new Bundle();
-                bundle.putString("taskId",titles.get(position).getTaskId());
-                bundle.putString("projectId",((ClientPage)context).cProjectId);
-                bundle.putString("login","client");
-                bundle.putString("adminUid",((ClientPage)context).adminUid);
-                fragment.setArguments(bundle);
-                fragmentTransaction.replace(R.id.fragment_container,fragment,"photoDisplay");
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+                Intent intent=new Intent(context,ClientPhotos.class);
+                intent.putExtra("taskId",titles.get(position).getTaskId());
+                intent.putExtra("projectId",((ClientTasks)context).cProjectId);
+                intent.putExtra("login","client");
+                intent.putExtra("adminUid",((ClientTasks)context).adminUid);
+                context.startActivity(intent);
+
+
             }
         });
 

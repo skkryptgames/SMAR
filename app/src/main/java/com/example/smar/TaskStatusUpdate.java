@@ -1,7 +1,7 @@
 package com.example.smar;
 
-import android.content.ClipData;
-import android.content.Intent;
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -15,11 +15,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,7 +28,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 
-public class TaskStatusUpdate extends Fragment {
+public class TaskStatusUpdate extends AppCompatActivity {
     Button button;
     TextView taskName,targetDate,photos,comments,numOfPhotos,numOfComments;
     ImageView taskImage,notStarted,inProgress,delayed,completed;
@@ -37,49 +36,67 @@ public class TaskStatusUpdate extends Fragment {
     int position,cProgress,a=R.drawable.ic_panorama_fish_eye_black_24dp;
     DatabaseReference reference;
     RelativeLayout not,in,del,comp;
+    ActionBar toolbar;
+    TextView toolbarTitle;
+    ImageView toolbarImage,signOut;
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.task_status_update_layout,container,false);
+    public void onBackPressed() {
+        super.onBackPressed();
+        button.setVisibility(View.VISIBLE);
 
-        uId= FirebaseAuth.getInstance().getCurrentUser().getUid();
-        title=((ClientPage)getActivity()).title;
-
-        Bundle bundle=getArguments();
-        moduleName=bundle.getString("moduleName");
-        date=bundle.getString("targetDate");
-        position=bundle.getInt("position");
-        image=bundle.getString("image");
-        taskId=bundle.getString("taskId");
-        pId=bundle.getString("projectId");
-        cProgress=bundle.getInt("progress");
-
-
-        return view;
     }
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
-        not=view.findViewById(R.id.smar_layout_notstarted);
-        in=view.findViewById(R.id.smar_layout_inprogress);
-        del=view.findViewById(R.id.smar_layout_delayed);
-        comp=view.findViewById(R.id.smar_layout_completed);
-        taskImage=view.findViewById(R.id.smar_imageview_moduleimage);
-        button=view.findViewById(R.id.smar_button_statusupdatedone);
-        taskName=view.findViewById(R.id.smar_textview_modulename);
-        targetDate=view.findViewById(R.id.smar_textview_targetdate);
-        numOfPhotos=view.findViewById(R.id.smar_textview_numofphotos);
-        numOfComments=view.findViewById(R.id.smar_textview_numofcomments);
-        photos=view.findViewById(R.id.smar_textview_photos);
-        comments=view.findViewById(R.id.smar_textview_comments);
+    @SuppressLint("WrongConstant")
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.task_status_update_layout);
+
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.toolbar_layout);
+        getSupportActionBar().getCustomView();
+
+        toolbar = getActionBar();
+        toolbarTitle = findViewById(R.id.smar_toolbar_title);
+        toolbarImage = findViewById(R.id.smar_toolbar_image);
+        signOut=findViewById(R.id.smar_imageview_signout);
+        signOut.setVisibility(View.GONE);
+        this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
+
+
+        title=getIntent().getStringExtra("title");
+        toolbarTitle.setText(title);
+
+
+        moduleName=getIntent().getStringExtra("moduleName");
+        date=getIntent().getStringExtra("targetDate");
+        position=getIntent().getIntExtra("position",0);
+        image=getIntent().getStringExtra("image");
+        taskId=getIntent().getStringExtra("taskId");
+        pId=getIntent().getStringExtra("projectId");
+        cProgress=getIntent().getIntExtra("progress",R.drawable.ic_panorama_fish_eye_black_24dp);
+        uId=getIntent().getStringExtra("userId");
+
+
+        not=findViewById(R.id.smar_layout_notstarted);
+        in=findViewById(R.id.smar_layout_inprogress);
+        del=findViewById(R.id.smar_layout_delayed);
+        comp=findViewById(R.id.smar_layout_completed);
+        taskImage=findViewById(R.id.smar_imageview_moduleimage);
+        button=findViewById(R.id.smar_button_statusupdatedone);
+        taskName=findViewById(R.id.smar_textview_modulename);
+        targetDate=findViewById(R.id.smar_textview_targetdate);
+        numOfPhotos=findViewById(R.id.smar_textview_numofphotos);
+        numOfComments=findViewById(R.id.smar_textview_numofcomments);
+        photos=findViewById(R.id.smar_textview_photos);
+        comments=findViewById(R.id.smar_textview_comments);
         taskName.setText(moduleName);
         targetDate.setText(date);
-        notStarted=view.findViewById(R.id.smar_imageview_notstarted);
-        inProgress=view.findViewById(R.id.smar_imageview_inprogress);
-        delayed=view.findViewById(R.id.smar_imageview_delayed);
-        completed=view.findViewById(R.id.smar_imageview_completed);
+        notStarted=findViewById(R.id.smar_imageview_notstarted);
+        inProgress=findViewById(R.id.smar_imageview_inprogress);
+        delayed=findViewById(R.id.smar_imageview_delayed);
+        completed=findViewById(R.id.smar_imageview_completed);
         reference= FirebaseDatabase.getInstance().getReference("users").child(uId).child("projects").child(pId).child("tasks").child(taskId);
 
         if(cProgress==R.drawable.ic_panorama_fish_eye_black_24dp){
@@ -165,17 +182,11 @@ public class TaskStatusUpdate extends Fragment {
                 map.put("progress",a);
                 reference.updateChildren(map);
 
-                ((ClientPage)getActivity()).onBackPressed();
+                TaskStatusUpdate.super.onBackPressed();
             }
         });
 
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
 
-                return true;
-            }
-        });
 
 
         photos.setOnClickListener(new View.OnClickListener() {
@@ -183,16 +194,18 @@ public class TaskStatusUpdate extends Fragment {
             public void onClick(View view) {
 
                 Fragment fragment=new PhotoDisplay();
-                FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
+                FragmentTransaction fragmentTransaction=getSupportFragmentManager().beginTransaction();
                 //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
                 Bundle bundle=new Bundle();
                 bundle.putString("projectId",pId);
                 bundle.putString("taskId",taskId);
                 bundle.putString("login","admin");
+                bundle.putString("userId",uId);
                 fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.fragment_container,fragment,"photoDisplay");
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
+                button.setVisibility(View.GONE);
             }
         });
 
@@ -200,16 +213,18 @@ public class TaskStatusUpdate extends Fragment {
             @Override
             public void onClick(View view) {
                 Fragment fragment=new AdminMessageActivity();
-                FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
+                FragmentTransaction fragmentTransaction=getSupportFragmentManager().beginTransaction();
                 //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
                 Bundle bundle=new Bundle();
                 bundle.putString("projectId",pId);
                 bundle.putString("taskId",taskId);
                 bundle.putString("login","admin");
+                bundle.putString("userId",uId);
                 fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.fragment_container,fragment,"AdminMessageActivity");
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
+                button.setVisibility(View.GONE);
             }
         });
 
@@ -218,28 +233,6 @@ public class TaskStatusUpdate extends Fragment {
 
 
 
-    @Override
-    public void onResume() {
 
-        super.onResume();
-        new TaskStatusUpdate();
-        getView().setFocusableInTouchMode(true);
-        getView().requestFocus();
-        getView().setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
 
-                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
-                    if(getFragmentManager().getBackStackEntryCount() > 0) {
-                        getFragmentManager().popBackStack();
-                    }
-
-                    return true;
-
-                }
-
-                return false;
-            }
-        });
-    }
 }

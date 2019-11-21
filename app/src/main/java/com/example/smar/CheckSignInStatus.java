@@ -2,7 +2,6 @@ package com.example.smar;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,7 +45,7 @@ public class CheckSignInStatus extends AppCompatActivity {
                                }
                                else {
                                    if (dataSnapshot.child("signInStatus").getValue(String.class).equals("signedIn")) {
-                                       Intent intent = new Intent(getApplicationContext(), ClientPage.class);
+                                       Intent intent = new Intent(getApplicationContext(), ClientTasks.class);
                                        startActivity(intent);
                                        finish();
                                    } else {

@@ -41,6 +41,11 @@ public class AuthenticationActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     @Override
+    public void onBackPressed() {
+        finish();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
@@ -131,7 +136,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                                             startActivity(homeIntent);
                                             finish();
                                         }else {
-                                            Intent clientIntent =new Intent(AuthenticationActivity.this,ClientPage.class);
+                                            Intent clientIntent =new Intent(AuthenticationActivity.this, ClientTasks.class);
                                             startActivity(clientIntent);
                                             finish();
                                         }
@@ -152,7 +157,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                                             a.put("phoneNumber", userNumber);
                                             a.put("userType", "client");
                                             reference.child(uid).child("info").updateChildren(a);
-                                            Intent clientIntent =new Intent(AuthenticationActivity.this,ClientPage.class);
+                                            Intent clientIntent =new Intent(AuthenticationActivity.this, ClientTasks.class);
                                             startActivity(clientIntent);
                                             finish();
                                         }

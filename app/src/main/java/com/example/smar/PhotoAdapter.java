@@ -1,5 +1,6 @@
 package com.example.smar;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +19,14 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
 
 
     private ArrayList<AddPhotos> pictures;
-    private PhotoDisplay mActivity;
+    private Context context;
     PhotoFullScreenDialog photoFullScreenDialog;
+    ClientPhotos clientPhotos;
 
 
 
-  public PhotoAdapter(PhotoDisplay mActivity, ArrayList<AddPhotos> pictures){
-      this.mActivity=mActivity;
+  public PhotoAdapter(Context context, ArrayList<AddPhotos> pictures){
+      this.context=context;
       this.pictures=pictures;
 
   }
@@ -43,22 +45,15 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
     public void onBindViewHolder(@NonNull PhotoAdapter.mViewHolder holder, int position) {
         AddPhotos addPhotos = (AddPhotos) pictures.get(position);
         Picasso.get().load(addPhotos.downloadUrl).placeholder(R.drawable.image_background).into(holder.displayImage);
-        holder.check.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
 
-                
-
-                return false;
-            }
-        });
 
         holder.displayImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 photoFullScreenDialog=new PhotoFullScreenDialog();
-                photoFullScreenDialog.showNow(mActivity.getFragmentManager(),"example");
+                photoFullScreenDialog.showNow(clientPhotos.getSupportFragmentManager(),"example");
                 Picasso.get().load(addPhotos.downloadUrl).into(photoFullScreenDialog.imageView);
+
             }
         });
 
@@ -83,13 +78,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
     public static class mViewHolder extends RecyclerView.ViewHolder {
 
        ImageView displayImage;
-       CheckBox check;
+
 
         public mViewHolder(@NonNull View itemView) {
             super(itemView);
 
             displayImage = itemView.findViewById(R.id.imageDisplay);
-            check = itemView.findViewById(R.id.check);
         }
     }
 

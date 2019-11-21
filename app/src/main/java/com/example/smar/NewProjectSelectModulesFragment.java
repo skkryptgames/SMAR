@@ -99,6 +99,11 @@ public class NewProjectSelectModulesFragment extends Fragment {
                     }
                     tasksToBeDoneThisWeek();
 
+
+                    HashMap<String,Object> a =new HashMap<>();
+                    a.put("userId",uid);
+                    FirebaseDatabase.getInstance().getReference("projects").child(bundle1.getString("projectKey")).updateChildren(a);
+
             }
         });
 

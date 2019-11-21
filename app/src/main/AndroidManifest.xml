@@ -28,7 +28,16 @@
         <activity
             android:name=".AdminPage"
             android:theme="@style/Theme.AppCompat.Light"   />
-        <activity android:name=".ClientPage" android:theme="@style/Theme.AppCompat.Light" />
+        <activity
+            android:name=".ClientTasks"
+            android:theme="@style/Theme.AppCompat.Light"   />
+        <activity
+            android:name=".ClientPhotos"
+            android:theme="@style/Theme.AppCompat.Light"   />
+        <activity
+            android:name=".TaskStatusUpdate"
+            android:theme="@style/Theme.AppCompat.Light"   />
+        <activity android:name=".AdminTasksPage" android:theme="@style/Theme.AppCompat.Light" />
 
     </application>
 

@@ -3,6 +3,7 @@ package com.example.smar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,7 +43,7 @@ public class AdminMessageActivity extends Fragment {
     private ArrayList<ChatMessage> messages = new ArrayList<>();
     String pId;
     String taskId;
-    String userType;
+    String userType,userId;
 
 
 
@@ -76,6 +77,21 @@ public class AdminMessageActivity extends Fragment {
         pId = bundle.getString("projectId");
         taskId = bundle.getString("taskId");
 
+        if(bundle.getString("login").equals("client")){
+
+            userId=bundle.getString("adminUid");
+            userType="client";
+
+
+
+        }
+        if(bundle.getString("login").equals("admin")){
+
+            userId=bundle.getString("userId");
+            userType="admin";
+        }
+
+
 
 
 
@@ -85,18 +101,7 @@ public class AdminMessageActivity extends Fragment {
         ref = FirebaseDatabase.getInstance().getReference();
 
         mFirebaseAuth = FirebaseAuth.getInstance();
-        FirebaseDatabase.getInstance().getReference("users").child(mFirebaseUser.getUid()).child("info").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userType=dataSnapshot.child("userType").getValue(String.class);
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
 
         readMessages();
@@ -115,7 +120,7 @@ public class AdminMessageActivity extends Fragment {
 
             private void sendMessage(String message, String sender) {
 
-                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(mFirebaseUser.getUid()).child("projects").child(pId).child("tasks").child(taskId).child("comments");
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(userId).child("projects").child(pId).child("tasks").child(taskId).child("comments");
 
 
                 String key = reference.push().getKey();
@@ -131,7 +136,7 @@ public class AdminMessageActivity extends Fragment {
 
     private void readMessages() {
 
-        ref = FirebaseDatabase.getInstance().getReference("users").child(mFirebaseUser.getUid()).child("projects").child(pId).child("tasks").child(taskId).child("comments");
+        ref = FirebaseDatabase.getInstance().getReference("users").child(userId).child("projects").child(pId).child("tasks").child(taskId).child("comments");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
