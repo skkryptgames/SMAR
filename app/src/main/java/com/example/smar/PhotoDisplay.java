@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -101,6 +102,23 @@ public class PhotoDisplay extends Fragment {
         if (bundle.getString("login").equals("client")) {
             button.setVisibility(View.GONE);
             userId = bundle.getString("adminUid");
+            ((ClientPage)getActivity()).signOut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Fragment fragment=new AdminMessageActivity();
+                    FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
+                    //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
+                    Bundle bundle=new Bundle();
+                    bundle.putString("taskId",taskId);
+                    bundle.putString("projectId",pId);
+                    bundle.putString("adminUid",userId);
+                    bundle.putString("login","client");
+                    fragment.setArguments(bundle);
+                    fragmentTransaction.replace(R.id.fragment_container,fragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                }
+            });
 
         }
         if (bundle.getString("login").equals("admin")) {
@@ -129,6 +147,7 @@ public class PhotoDisplay extends Fragment {
         photos.setAdapter(mAdapter);
 
         Query imagesQuery = database.child("images").orderByKey().limitToFirst(100);
+        pics.clear();
         imagesQuery.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -150,7 +169,7 @@ public class PhotoDisplay extends Fragment {
 
                     }
                 });
-                mAdapter.addPhoto(addPhotos);
+                pics.add(addPhotos);
             }
 
             @Override

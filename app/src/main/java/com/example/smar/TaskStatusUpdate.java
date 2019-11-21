@@ -196,6 +196,25 @@ public class TaskStatusUpdate extends Fragment {
             }
         });
 
+        comments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment=new AdminMessageActivity();
+                FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
+                //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
+                Bundle bundle=new Bundle();
+                bundle.putString("projectId",pId);
+                bundle.putString("taskId",taskId);
+                bundle.putString("login","admin");
+                bundle.putString("userId",uId);
+                fragment.setArguments(bundle);
+                fragmentTransaction.replace(R.id.fragment_container,fragment,"AdminMessageActivity");
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                button.setVisibility(View.GONE);
+            }
+        });
+
 
     }
 
