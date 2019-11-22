@@ -41,6 +41,10 @@ public class ClientPage extends AppCompatActivity {
     String adminUid,cProjectId,uId;
     RecyclerView clientRecyclerView;
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 
     @SuppressLint("WrongConstant")
     @Override

@@ -1,11 +1,17 @@
 package com.example.smar;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,11 +25,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
+
 public class EditProjectFragment extends Fragment {
     String uid,pid;
     String projectName,clientName,clientNumber;
     EditText pName,cName,cNumber;
     Button button;
+    String number;
 
 
     @Nullable
@@ -67,26 +76,74 @@ public class EditProjectFragment extends Fragment {
 
 
 
+        cNumber.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                if(s.length()>0) {
+                    char a;
+                    a = s.charAt(0);
+                    if (a == '+') {
+                        cNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(13)});
+                        number = cNumber.getText().toString();
+
+
+                    } else {
+                        cNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
+                        number = cNumber.getText().toString();
+
+                    }
+                }
+
+            }
+        });
+
         button=view.findViewById(R.id.smar_button_newprojectnext);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                HashMap<String,Object> a =new HashMap<>();
-                a.put("projectName",pName.getText().toString());
-                a.put("clientName",cName.getText().toString());
-                a.put("clientNumber",cNumber.getText().toString());
+                if (!TextUtils.isEmpty(pName.getText().toString()) && !TextUtils.isEmpty(cName.getText().toString()) && !TextUtils.isEmpty(cNumber.getText().toString())) {
+                    try {
+                        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    } catch (Exception e) {
 
-                FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(pid).updateChildren(a);
+                    }
+                    HashMap<String, Object> a = new HashMap<>();
+                    a.put("projectName", pName.getText().toString());
+                    a.put("clientName", cName.getText().toString());
+                    if(number.length()>10){
+                        number=number.substring(3);
+                    }
+                    a.put("clientNumber", number);
 
-                Fragment fragment=new NewProjectStartDateFragment();
-                Bundle bundle=new Bundle();
-                bundle.putString("projectTitle",pName.getText().toString());
-                bundle.putString("projectKey",pid);
-                bundle.putString("status","update");
-                bundle.putString("userId",uid);
-                fragment.setArguments(bundle);
-                getFragmentManager().beginTransaction().replace(R.id.fragment_container,fragment).addToBackStack(null).commit();
+                    FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(pid).updateChildren(a);
+
+                    Fragment fragment = new NewProjectStartDateFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("projectTitle", pName.getText().toString());
+                    bundle.putString("projectKey", pid);
+                    bundle.putString("status", "update");
+                    bundle.putString("userId", uid);
+                    fragment.setArguments(bundle);
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
+                }else {
+                    Toast.makeText(getContext(),"Please enter valid data",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

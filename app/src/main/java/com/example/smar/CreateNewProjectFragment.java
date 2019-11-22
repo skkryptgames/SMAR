@@ -1,7 +1,10 @@
 package com.example.smar;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +37,7 @@ public class CreateNewProjectFragment extends Fragment {
     FirebaseAuth mAuth;
     String uid,key;
     int count=0;
+    String number;
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -42,6 +46,44 @@ public class CreateNewProjectFragment extends Fragment {
         cName=view.findViewById(R.id.smar_edittext_clientname);
         pNumber=view.findViewById(R.id.smar_edittext_phonenumber);
         mAuth=FirebaseAuth.getInstance();
+
+        pNumber.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                if(s.length()>0) {
+                    char a;
+                    a = s.charAt(0);
+                    if (a == '+') {
+                        pNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(13)});
+                        number = pNumber.getText().toString();
+
+
+                    } else {
+                        pNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
+                        number = pNumber.getText().toString();
+
+                    }
+                }
+
+            }
+        });
+
+
+
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +95,10 @@ public class CreateNewProjectFragment extends Fragment {
                 } catch (Exception e) {
                    
                 }
+
+                    if(number.length()>10){
+                        number=number.substring(3);
+                    }
                 count=0;
 
 
@@ -73,7 +119,7 @@ public class CreateNewProjectFragment extends Fragment {
                                 HashMap<String, Object> map = new HashMap<>();
                                 map.put("projectName", pName.getText().toString());
                                 map.put("clientName", cName.getText().toString());
-                                map.put("clientNumber", pNumber.getText().toString());
+                                map.put("clientNumber", number);
                                 map.put("projectId", key);
                                 map.put("userId",uid);
                                 map.put("progress",R.drawable.ic_panorama_fish_eye_black_24dp);
@@ -85,7 +131,7 @@ public class CreateNewProjectFragment extends Fragment {
                                 map1.put("projectId",key);
                                 map1.put("adminUid",uid);
                                 map1.put("projectName",pName.getText().toString());
-                                databaseReference.child(pNumber.getText().toString()).updateChildren(map1);
+                                databaseReference.child(number).updateChildren(map1);
 
                                 Fragment fragment=new NewProjectStartDateFragment();
                                 FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
@@ -122,6 +168,8 @@ public class CreateNewProjectFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.create_new_project_layout,container,false);
         ((AdminPage)getActivity()).toolbarTitle.setText("Project SetUp");
+
+
         return view;
     }
 }
