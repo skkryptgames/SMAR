@@ -35,10 +35,11 @@ public class TaskStatusUpdate extends AppCompatActivity {
     String moduleName,date,title,taskId,uId,pId,image;
     int position,cProgress,a=R.drawable.ic_panorama_fish_eye_black_24dp;
     DatabaseReference reference;
-    RelativeLayout not,in,del,comp;
+    RelativeLayout not,in,del,comp,photosLayout,commentsLayout;
     ActionBar toolbar;
     TextView toolbarTitle;
     ImageView toolbarImage,signOut;
+
 
     @Override
     public void onBackPressed() {
@@ -97,6 +98,9 @@ public class TaskStatusUpdate extends AppCompatActivity {
         inProgress=findViewById(R.id.smar_imageview_inprogress);
         delayed=findViewById(R.id.smar_imageview_delayed);
         completed=findViewById(R.id.smar_imageview_completed);
+        photosLayout=findViewById(R.id.smar_layout_photos);
+        commentsLayout=findViewById(R.id.smar_layout_comments);
+
         reference= FirebaseDatabase.getInstance().getReference("users").child(uId).child("projects").child(pId).child("tasks").child(taskId);
 
         if(cProgress==R.drawable.ic_panorama_fish_eye_black_24dp){
@@ -173,6 +177,18 @@ public class TaskStatusUpdate extends AppCompatActivity {
             }
         });
 
+        reference.child("comments").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                long i= dataSnapshot.getChildrenCount();
+                numOfComments.setText(""+i);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -189,7 +205,7 @@ public class TaskStatusUpdate extends AppCompatActivity {
 
 
 
-        photos.setOnClickListener(new View.OnClickListener() {
+        photosLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -209,7 +225,7 @@ public class TaskStatusUpdate extends AppCompatActivity {
             }
         });
 
-        comments.setOnClickListener(new View.OnClickListener() {
+        commentsLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Fragment fragment=new AdminMessageActivity();

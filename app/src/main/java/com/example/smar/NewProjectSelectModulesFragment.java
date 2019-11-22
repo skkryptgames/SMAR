@@ -66,11 +66,11 @@ public class NewProjectSelectModulesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         button=view.findViewById(R.id.smar_button_modulesdone);
-        uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
+        uid= bundle1.getString("userId");
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(),"new project has been created and added to the list",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(),"new project has been created and added to the list",Toast.LENGTH_SHORT).show();
 
 
                 Intent intent=new Intent(getContext(),AdminPage.class);
@@ -84,6 +84,21 @@ public class NewProjectSelectModulesFragment extends Fragment {
 
                     DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(bundle1.getString("projectKey"));
                     reference3=reference.child("tasks");
+                    if(bundle1.getString("status").equals("create")){
+                        for(ModulesPojo model:modulesList){
+                        if(model.isSelected()){
+                            String key=reference3.push().getKey();
+                            HashMap<String,Object> map=new HashMap<>();
+                            map.put("taskId",key);
+                            map.put("taskName",model.getName());
+                            map.put("taskImage",model.getImage());
+                            map.put("startDate",model.getStartDate());
+                            map.put("numOfDays",model.getNumOfDays());
+                            map.put("progress",R.drawable.ic_panorama_fish_eye_black_24dp);
+                            reference3.child(key).updateChildren(map);
+                        }
+                    }}if(bundle1.getString("status").equals("update")){
+                        reference3.removeValue();
                     for(ModulesPojo model:modulesList){
                         if(model.isSelected()){
                             String key=reference3.push().getKey();
@@ -97,6 +112,9 @@ public class NewProjectSelectModulesFragment extends Fragment {
                             reference3.child(key).updateChildren(map);
                         }
                     }
+
+
+                }
                     tasksToBeDoneThisWeek();
 
             }
@@ -114,7 +132,13 @@ public class NewProjectSelectModulesFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         bundle1=getArguments();
         pTitle=bundle1.getString("projectTitle");
+
+        if(bundle1.getString("status").equals("create"))
         ((AdminPage)getActivity()).toolbarTitle.setText(pTitle);
+        if(bundle1.getString("status").equals("update"))
+            ((AdminTasksPage) getActivity()).toolbarTitle.setText(pTitle);
+
+
 
 
         populateList();

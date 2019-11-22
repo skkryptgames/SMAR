@@ -3,6 +3,8 @@ package com.example.smar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -56,7 +58,7 @@ public class AdminTasksPage extends AppCompatActivity {
     TextView toolbarTitle;
     ImageView toolbarImage,signOut;
     String title;
-    static String pId,uId;
+     String pId,uId;
     DatabaseReference reference;
     int notStarted=0,inProgress=0,delayed=0,completed=0;
     String cProjectId,adminUid;
@@ -168,6 +170,18 @@ public class AdminTasksPage extends AppCompatActivity {
         toolbarTitle.setText(title);
         signOut.setImageResource(R.drawable.ic_icn_scribe_dark);
 
+        signOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment=new EditProjectFragment();
+                Bundle bundle=new Bundle();
+                bundle.putString("projectId",pId);
+                bundle.putString("userId",uId);
+                fragment.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,fragment).addToBackStack(null).commit();
+            }
+        });
+
 
 
         toolbarImage.setOnClickListener(new View.OnClickListener() {
@@ -217,10 +231,10 @@ public class AdminTasksPage extends AppCompatActivity {
 
     }
 
-    public static String getProjectId(){
+   /* public static String getProjectId(){
         String a=pId ;
         return a;
-    }
+    }*/
     private String dateFinder(String a,int days){
         Calendar f =new GregorianCalendar();
         Date date1=new Date();

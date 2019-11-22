@@ -54,6 +54,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
                 photoFullScreenDialog.showNow(clientPhotos.getSupportFragmentManager(),"example");
                 Picasso.get().load(addPhotos.downloadUrl).into(photoFullScreenDialog.imageView);
 
+
             }
         });
 

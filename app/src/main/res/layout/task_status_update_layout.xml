@@ -168,8 +168,22 @@
         android:layout_below="@+id/smar_view_line"
         android:layout_alignStart="@+id/smar_imageview_moduleimage"
         android:textColor="@color/blue"
-        android:layout_marginTop="15dp"
-        android:text="Photos    " />
+        android:layout_marginTop="16dp"
+        android:text="Photos    "
+        android:layout_marginBottom="20dp"/>
+
+    <RelativeLayout
+        android:id="@+id/smar_layout_photos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/smar_view_linetwo"
+        android:layout_below="@+id/smar_view_line"/>
+    <RelativeLayout
+        android:id="@+id/smar_layout_comments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/smar_view_linethree"
+        android:layout_below="@+id/smar_view_linetwo"/>
 
     <View
         android:id="@+id/smar_view_linetwo"
@@ -177,7 +191,7 @@
         android:layout_height="2dp"
         android:background="@color/gray"
         android:layout_below="@+id/smar_textview_photos"
-        android:layout_marginTop="20dp"/>
+        />
     <TextView
         android:id="@+id/smar_textview_comments"
         android:layout_width="wrap_content"
@@ -186,14 +200,15 @@
         android:textColor="@color/blue"
         android:layout_below="@+id/smar_view_linetwo"
         android:layout_alignStart="@+id/smar_imageview_moduleimage"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"/>
     <View
         android:id="@+id/smar_view_linethree"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="@color/gray"
         android:layout_below="@+id/smar_textview_comments"
-        android:layout_marginTop="20dp"/>
+        />
     <TextView
         android:id="@+id/smar_textview_numofphotos"
         android:layout_width="wrap_content"
@@ -223,7 +238,7 @@
         android:id="@+id/smar_textview_unread"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Unread"
+        android:text="comments"
         android:textColor="@color/gray"
         android:layout_toEndOf="@+id/smar_textview_numofcomments"
         android:layout_alignTop="@+id/smar_textview_numofcomments"

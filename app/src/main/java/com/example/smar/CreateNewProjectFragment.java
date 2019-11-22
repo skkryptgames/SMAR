@@ -94,6 +94,8 @@ public class CreateNewProjectFragment extends Fragment {
                                 Bundle bundle=new Bundle();
                                 bundle.putString("projectTitle",pName.getText().toString());
                                 bundle.putString("projectKey",key);
+                                bundle.putString("status","create");
+                                bundle.putString("userId",uid);
                                 fragment.setArguments(bundle);
                                 fragmentTransaction.replace(R.id.fragment_container,fragment);
                                 fragmentTransaction.addToBackStack("hello");

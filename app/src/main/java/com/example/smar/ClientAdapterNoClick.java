@@ -18,7 +18,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import static com.example.smar.AdminTasksPage.getProjectId;
+
 
 public class ClientAdapterNoClick extends RecyclerView.Adapter<ClientAdapterNoClick.ClientViewHolder> {
 
