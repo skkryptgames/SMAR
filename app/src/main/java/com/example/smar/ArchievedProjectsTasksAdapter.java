@@ -17,14 +17,14 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import static com.example.smar.AdminTasksPage.getProjectId;
+
 
 
 public class ArchievedProjectsTasksAdapter extends RecyclerView.Adapter<ArchievedProjectsTasksAdapter.ClientViewHolder> {
 
     private ArrayList<Client> titles;
     Context context;
-    String pId=getProjectId();
+
 
 
 

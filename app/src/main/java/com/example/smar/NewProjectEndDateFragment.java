@@ -34,8 +34,11 @@ public class NewProjectEndDateFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ((AdminPage)getActivity()).toolbarTitle.setText("Project End Date");
         bundle1=getArguments();
+        if(bundle1.getString("status").equals("create"))
+            ((AdminPage)getActivity()).toolbarTitle.setText("Project End Date");
+        if(bundle1.getString("status").equals("update"))
+            ((AdminTasksPage)getActivity()).toolbarTitle.setText("Project End Date");
         return inflater.inflate(R.layout.project_end_date_layout,container,false);
     }
 
@@ -44,7 +47,7 @@ public class NewProjectEndDateFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         calendarView=view.findViewById(R.id.smar_calenderview_calender);
         button=view.findViewById(R.id.smar_button_enddatenext);
-        uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
+        uid= bundle1.getString("userId");
 
         Calendar f =new GregorianCalendar();
         Date date1=new Date();
@@ -95,6 +98,8 @@ public class NewProjectEndDateFragment extends Fragment {
                 bundle.putString("projectTitle",bundle1.getString("projectTitle"));
                 bundle.putString("projectKey",bundle1.getString("projectKey"));
                 bundle.putString("projectStartDate",bundle1.getString("projectStartDate"));
+                bundle.putString("status",bundle1.getString("status"));
+                bundle.putString("userId",bundle1.getString("userId"));
                 fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.fragment_container,fragment);
                 fragmentTransaction.addToBackStack(null);

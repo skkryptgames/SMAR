@@ -18,13 +18,13 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import static com.example.smar.AdminTasksPage.getProjectId;
+
 
 public class ClientAdapter extends RecyclerView.Adapter<ClientAdapter.ClientViewHolder> {
 
     private ArrayList<Client> titles;
     Context context;
-    String pId=getProjectId();
+
 
 
 
@@ -69,13 +69,13 @@ public class ClientAdapter extends RecyclerView.Adapter<ClientAdapter.ClientView
 
 
                 intent.putExtra("taskId",titles.get(position).getTaskId());
-                intent.putExtra("projectId",pId);
+                intent.putExtra("projectId",((AdminTasksPage)context).pId);
                 intent.putExtra("moduleName",holder.design.getText().toString());
                 intent.putExtra("targetDate",holder.targetDate.getText().toString());
                 intent.putExtra("position",position);
                 intent.putExtra("image",titles.get(position).getImages());
                 intent.putExtra("progress",titles.get(position).getTick());
-                intent.putExtra("userId", AdminTasksPage.uId);
+                intent.putExtra("userId", ((AdminTasksPage)context).uId);
                 intent.putExtra("title",((AdminTasksPage)context).title);
 
                 context.startActivity(intent);

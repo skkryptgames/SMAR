@@ -13,10 +13,17 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 public class NewProjectStartDateFragment extends Fragment {
@@ -31,9 +38,39 @@ public class NewProjectStartDateFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        ((AdminPage)getActivity()).toolbarTitle.setText("Project Start Date");
-
          bundle1=getArguments();
+if(bundle1.getString("status").equals("create")){
+        ((AdminPage)getActivity()).toolbarTitle.setText("Project Start Date");
+       }
+if(bundle1.getString("status").equals("update")){
+    ((AdminTasksPage)getActivity()).toolbarTitle.setText("Project Start Date");
+
+    FirebaseDatabase.getInstance().getReference("users").child(bundle1.getString("userId")).child("projects").child(bundle1.getString("projectKey")).addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            String date=dataSnapshot.child("startDate").getValue(String.class);
+
+            Calendar f =new GregorianCalendar();
+            Date date1=new Date();
+            SimpleDateFormat sdf=new SimpleDateFormat("MMM dd yyyy");
+            try {
+                date1=sdf.parse(date);
+                System.out.println(date1);
+                f.setTime(date1);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            calendarView.setDate(f.getTimeInMillis());
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    });
+
+}
+
         return inflater.inflate(R.layout.project_start_date_layout,container,false);
     }
 
@@ -42,7 +79,7 @@ public class NewProjectStartDateFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         calendarView=view.findViewById(R.id.smar_calenderview_calender);
         button=view.findViewById(R.id.smar_button_startdatenext);
-        uid=FirebaseAuth.getInstance().getCurrentUser().getUid();
+        uid=bundle1.getString("userId");
 
         Calendar calendar=Calendar.getInstance();
         int thisYear = calendar.get(Calendar.YEAR);
@@ -86,6 +123,8 @@ public class NewProjectStartDateFragment extends Fragment {
                 bundle.putString("projectTitle",bundle1.getString("projectTitle"));
                 bundle.putString("projectKey",bundle1.getString("projectKey"));
                 bundle.putString("projectStartDate",startDate);
+                bundle.putString("status",bundle1.getString("status"));
+                bundle.putString("userId",bundle1.getString("userId"));
 
                 fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.fragment_container,fragment);

@@ -180,6 +180,24 @@ public class AdminPage extends AppCompatActivity {
 
 
                     mProjectListData.add(new ProjectList(pName,tasks,endDate,pId,progress,uid));
+
+                    if(progress==R.drawable.ic_checked && pId!=null){
+                        reference.child(pId).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                FirebaseDatabase.getInstance().getReference("archievedprojects").child(uid).child(pId).setValue(dataSnapshot.getValue());
+
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+
                     tasksToBeDoneThisWeek(pId);
                     adapter.notifyDataSetChanged();
 
