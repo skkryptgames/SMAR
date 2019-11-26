@@ -10,6 +10,7 @@ public class AddPhotos {
     public String userId;
     public String downloadUrl;
 
+
     // these properties will not be saved to the database
     @Exclude
     public DBUser DBUser;
@@ -40,8 +41,5 @@ public class AddPhotos {
         this.downloadUrl = downloadUrl;
 
 
-
     }
-
-
 }

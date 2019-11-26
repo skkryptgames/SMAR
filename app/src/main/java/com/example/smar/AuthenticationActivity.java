@@ -136,7 +136,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                                             finish();
                                         }
                                     }else {
-                                        if (userNumber.equals("6304267978") || userNumber.equals("9900422344") || userNumber.equals("9900977344") || userNumber.equals("7981168985")) {
+                                        if (userNumber.equals("6304267978") || userNumber.equals("9900422344") || userNumber.equals("9900977344") || userNumber.equals("7981168985") || userNumber.equals("7036314066")) {
                                             HashMap<String, Object> a = new HashMap<>();
                                             a.put("signInStatus","signedIn");
                                             a.put("phoneNumber", userNumber);
