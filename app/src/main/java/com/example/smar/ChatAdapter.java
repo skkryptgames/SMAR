@@ -55,6 +55,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
         holder.message_user.setText(mProjectListData.get(position).getMessageText());
+        holder.number.setText(mProjectListData.get(position).getSender());
     }
 
 
@@ -66,12 +67,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     class MyViewHolder extends RecyclerView.ViewHolder {
 
 
-        TextView message_user;
+        TextView message_user,number;
 
         private MyViewHolder(View itemView) {
             super(itemView);
 
             message_user = (TextView) itemView.findViewById(R.id.sender);
+            number=(TextView) itemView.findViewById(R.id.number);
 
         }
     }
@@ -79,10 +81,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     @Override
     public int getItemViewType(int position) {
 
-        if(mProjectListData.get(position).getuserType().equals("admin")){
-            a=MSG_TYPE_LEFT;
-        }else {
+        if(mProjectListData.get(position).getuserType().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
             a=MSG_TYPE_RIGHT;
+        }else {
+            a=MSG_TYPE_LEFT;
         }
         return a;
     }

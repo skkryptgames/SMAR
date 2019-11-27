@@ -13,8 +13,10 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -57,7 +59,7 @@ public class AdminMessageActivity extends Fragment {
         mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyler_chat.setLayoutManager(mLinearLayoutManager);
 
-        recyler_chat.setHasFixedSize(true);
+
 
 
         mAdapter = new ChatAdapter(getContext(), messages);
@@ -127,7 +129,7 @@ public class AdminMessageActivity extends Fragment {
                 HashMap<String,Object> a=new HashMap<>();
                 a.put("sender",sender);
                 a.put("message",message);
-                a.put("userType",userType);
+                a.put("userType",FirebaseAuth.getInstance().getCurrentUser().getUid());
                 reference.child(key).setValue(a);
             }
 
@@ -149,6 +151,8 @@ public class AdminMessageActivity extends Fragment {
                     ChatMessage chatMessage=new ChatMessage(message,sender,userId);
                     messages.add(chatMessage);
                     mAdapter.notifyDataSetChanged();
+
+                    recyler_chat.scrollToPosition(messages.size()-1);
                 }
 
 

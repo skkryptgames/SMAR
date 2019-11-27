@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -59,6 +61,34 @@ public class AuthenticationActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        phoneEnter = (EditText) findViewById(R.id.phoneEnter);
+
+        phoneEnter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+                if(editable.length()>0){
+                    if(editable.charAt(0)=='+'){
+                        phoneEnter.setFilters(new InputFilter[]{new InputFilter.LengthFilter(13)});
+                    }
+                    else {
+                        phoneEnter.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
+                    }
+                }
+
+            }
+        });
+
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
@@ -68,6 +98,7 @@ public class AuthenticationActivity extends AppCompatActivity {
             @Override
             public void onVerificationFailed(FirebaseException e) {
                 Toast.makeText(getApplicationContext(),"Service error,please try again after short time",Toast.LENGTH_LONG).show();
+                phoneEnter.setEnabled(true);
             }
 
             @Override
@@ -82,22 +113,6 @@ public class AuthenticationActivity extends AppCompatActivity {
 
                 requestOtp.setText("Go");
 
-            }
-        };
-        requestOtp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                phoneEnter = (EditText) findViewById(R.id.phoneEnter);
-                userNumber = phoneEnter.getText().toString();
-                String number = "+" + "91" + userNumber;
-                PhoneAuthProvider.getInstance().verifyPhoneNumber(number, 60, TimeUnit.SECONDS, AuthenticationActivity.this, mCallbacks);
-
-                phoneEnter.setFilters(new InputFilter[] { new InputFilter.LengthFilter(13) });
-                phoneEnter.setText("+91" + userNumber);
-                phoneEnter.setEnabled(false);
-
-
                 requestOtp.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -111,6 +126,38 @@ public class AuthenticationActivity extends AppCompatActivity {
 
                     }
                 });
+
+            }
+        };
+        requestOtp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+
+                userNumber = phoneEnter.getText().toString();
+                if(userNumber.length()>10) {
+
+                    PhoneAuthProvider.getInstance().verifyPhoneNumber(userNumber, 60, TimeUnit.SECONDS, AuthenticationActivity.this, mCallbacks);
+
+                    phoneEnter.setText(""+userNumber);
+                    phoneEnter.setEnabled(false);
+
+                }
+                else if(userNumber.length()==10){
+                    String number = "+" + "91" + userNumber;
+                    PhoneAuthProvider.getInstance().verifyPhoneNumber(number, 60, TimeUnit.SECONDS, AuthenticationActivity.this, mCallbacks);
+
+                    phoneEnter.setFilters(new InputFilter[]{new InputFilter.LengthFilter(13)});
+                    phoneEnter.setText("+91" + userNumber);
+                    phoneEnter.setEnabled(false);
+                }else {
+                    Toast.makeText(getApplicationContext(),"please enter valid number",Toast.LENGTH_SHORT).show();
+                    phoneEnter.setEnabled(true);
+                }
+
+
+
 
             }
         });
@@ -141,26 +188,37 @@ public class AuthenticationActivity extends AppCompatActivity {
                                             finish();
                                         }
                                     }else {
-                                        if (userNumber.equals("6304267978") || userNumber.equals("9900422344") || userNumber.equals("9900977344") || userNumber.equals("7981168985") || userNumber.equals("7036314066")) {
-                                            HashMap<String, Object> a = new HashMap<>();
-                                            a.put("signInStatus","signedIn");
-                                            a.put("phoneNumber", userNumber);
-                                            a.put("userType", "admin");
-                                            reference.child(uid).child("info").updateChildren(a);
-                                            Intent homeIntent = new Intent(AuthenticationActivity.this, AdminPage.class);
-                                            startActivity(homeIntent);
-                                            finish();
 
-                                        } else {
-                                            HashMap<String, Object> a = new HashMap<>();
-                                            a.put("signInStatus","signedIn");
-                                            a.put("phoneNumber", userNumber);
-                                            a.put("userType", "client");
-                                            reference.child(uid).child("info").updateChildren(a);
-                                            Intent clientIntent =new Intent(AuthenticationActivity.this, ClientPage.class);
-                                            startActivity(clientIntent);
-                                            finish();
-                                        }
+                                        FirebaseDatabase.getInstance().getReference("admins").child(userNumber).addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                if(dataSnapshot.exists()){
+                                                    HashMap<String, Object> a = new HashMap<>();
+                                                    a.put("signInStatus","signedIn");
+                                                    a.put("phoneNumber", userNumber);
+                                                    a.put("userType", "admin");
+                                                    reference.child(uid).child("info").updateChildren(a);
+                                                    Intent homeIntent = new Intent(AuthenticationActivity.this, AdminPage.class);
+                                                    startActivity(homeIntent);
+                                                    finish();
+                                                }else {
+                                                    HashMap<String, Object> a = new HashMap<>();
+                                                    a.put("signInStatus","signedIn");
+                                                    a.put("phoneNumber", userNumber);
+                                                    a.put("userType", "client");
+                                                    reference.child(uid).child("info").updateChildren(a);
+                                                    Intent clientIntent =new Intent(AuthenticationActivity.this, ClientPage.class);
+                                                    startActivity(clientIntent);
+                                                    finish();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+
                                     }
                                 }
 

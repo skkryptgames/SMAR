@@ -88,34 +88,10 @@ public class PhotoDisplay extends Fragment {
 
         button = (Button) view.findViewById(R.id.button);
 
-        if(bundle.getString("login").equals("client")){
-            button.setVisibility(View.GONE);
-            userId=bundle.getString("adminUid");
-            ((ClientPage)getActivity()).signOut.setImageResource(R.drawable.ic_141_chat_1);
-            ((ClientPage)getActivity()).signOut.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Fragment fragment=new AdminMessageActivity();
-                    FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
-                    //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
-                    Bundle bundle=new Bundle();
-                    bundle.putString("taskId",taskId);
-                    bundle.putString("projectId",pId);
-                    bundle.putString("adminUid",userId);
-                    bundle.putString("login","client");
-                    fragment.setArguments(bundle);
-                    fragmentTransaction.replace(R.id.fragment_container,fragment);
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                }
-            });
 
-
-        }
-        if(bundle.getString("login").equals("admin")){
             button.setVisibility(View.VISIBLE);
             userId=bundle.getString("userId");
-        }
+
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
