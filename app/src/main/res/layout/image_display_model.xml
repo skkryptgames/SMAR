@@ -6,6 +6,11 @@
     android:layout_height="wrap_content">
 
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
     <ImageView
         android:id="@+id/imageDisplay"
         android:layout_width="match_parent"
@@ -17,5 +22,20 @@
         app:layout_constraintStart_toStartOf="parent"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"/>
+
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:baselineAlignBottom="true"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:id="@+id/check"
+        >
+
+    </CheckBox>
+
+    </RelativeLayout>
 
 </LinearLayout>
