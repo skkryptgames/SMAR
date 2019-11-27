@@ -54,8 +54,8 @@ public class ArchievedProjectTasksPage extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("archievedprojects").child(uid).child(pId).child("tasks");
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("archievedprojects").child(pId).child("tasks");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

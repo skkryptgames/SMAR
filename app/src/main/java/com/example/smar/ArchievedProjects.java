@@ -84,10 +84,9 @@ public class ArchievedProjects extends AppCompatActivity {
 
         button=findViewById(R.id.smar_layout_buttonlinear);
         button.setVisibility(View.GONE);
-        String uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        DatabaseReference reference= FirebaseDatabase.getInstance().getReference("archievedprojects").child(uid);
-        DatabaseReference reference1=FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects");
+
+        DatabaseReference reference= FirebaseDatabase.getInstance().getReference("archievedprojects");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

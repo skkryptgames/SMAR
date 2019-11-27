@@ -42,7 +42,7 @@ public class AdminPage extends AppCompatActivity {
     ActionBar toolbar;
     TextView toolbarTitle;
     ImageView toolbarImage,signOut;
-    String uid,b;
+    String uId,b;
     int a=0;
 
     @Override
@@ -87,7 +87,6 @@ public class AdminPage extends AppCompatActivity {
             }
         });
 
-        uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
 
 
 
@@ -162,45 +161,49 @@ public class AdminPage extends AppCompatActivity {
         mProjectListData.add(projectList2);
         mProjectListData.add(projectList3);*/
 
-        uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
-        final DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects");
+       // uId= FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mProjectListData.clear();
-
-
                 for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                    final String pName= dataSnapshot1.child("projectName").getValue(String.class);
-                    final String endDate=dataSnapshot1.child("endDate").getValue(String.class);
-                    final String pId=dataSnapshot1.child("projectId").getValue(String.class);
-                    final int progress=dataSnapshot1.child("progress").getValue(Integer.class);
-                    String tasks=dataSnapshot1.child("thisWeekTasks").getValue(String.class);
-                    String uid=dataSnapshot1.child("userId").getValue(String.class);
+                    if(dataSnapshot1.child("projects").exists()){
+                        for(DataSnapshot dataSnapshot2:dataSnapshot1.child("projects").getChildren()){
+
+                            final String pName= dataSnapshot2.child("projectName").getValue(String.class);
+                            final String endDate=dataSnapshot2.child("endDate").getValue(String.class);
+                            final String pId=dataSnapshot2.child("projectId").getValue(String.class);
+                            final int progress=dataSnapshot2.child("progress").getValue(Integer.class);
+                            String tasks=dataSnapshot2.child("thisWeekTasks").getValue(String.class);
+                            uId=dataSnapshot2.child("userId").getValue(String.class);
 
 
-                    mProjectListData.add(new ProjectList(pName,tasks,endDate,pId,progress,uid));
-
-                    if(progress==R.drawable.ic_checked && pId!=null){
-                        reference.child(pId).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                FirebaseDatabase.getInstance().getReference("archievedprojects").child(uid).child(pId).setValue(dataSnapshot.getValue());
 
 
+                            mProjectListData.add(new ProjectList(pName,tasks,endDate,pId,progress,uId));
+
+                            if(progress==R.drawable.ic_checked && pId!=null){
+                                reference.child(uId).child("projects").child(pId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                        FirebaseDatabase.getInstance().getReference("archievedprojects").child(pId).setValue(dataSnapshot.getValue());
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
                             }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            tasksToBeDoneThisWeek(pId);
+                            adapter.notifyDataSetChanged();
 
-                            }
-                        });
+                        }
                     }
-
-                    tasksToBeDoneThisWeek(pId);
-                    adapter.notifyDataSetChanged();
-
                 }
 
             }
@@ -228,8 +231,8 @@ public class AdminPage extends AppCompatActivity {
 
     }
     public void tasksToBeDoneThisWeek(String a){
-        final DatabaseReference reference1= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(a);
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(a).child("tasks");
+        final DatabaseReference reference1= FirebaseDatabase.getInstance().getReference().child("users").child(uId).child("projects").child(a);
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users").child(uId).child("projects").child(a).child("tasks");
         Calendar calendar=Calendar.getInstance();
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -263,9 +266,9 @@ public class AdminPage extends AppCompatActivity {
             e.printStackTrace();
         }
         Calendar c = Calendar.getInstance();
-        c.setFirstDayOfWeek(Calendar.MONDAY);
+        c.setFirstDayOfWeek(Calendar.SUNDAY);
 
-        c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
         c.set(Calendar.HOUR_OF_DAY, 0);
         c.set(Calendar.MINUTE, 0);
         c.set(Calendar.SECOND, 0);

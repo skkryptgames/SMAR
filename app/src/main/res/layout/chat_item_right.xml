@@ -3,24 +3,37 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/background_left"
-        android:id="@+id/sender"
-        android:text="Hi How r u doing??"
-        android:textColor="@color/white"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="12dp"
-        android:textSize="16sp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginRight="10dp"
         android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="8dp"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true">
+        android:padding="12dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/sender"
+            android:text="Hi How r u doing?"
+            android:layout_marginTop="4dp"
+            android:textSize="16sp"
+            android:layout_below="@+id/number"
+            android:textColor="@color/white"
+            />
 
-    </TextView>
+        <TextView
+            android:id="@+id/number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="7060469656"
+            android:textColor="@color/gray"
+            android:layout_marginTop="-4dp"
+            android:textSize="12sp"
+
+            />
+    </RelativeLayout>
 
 
 </RelativeLayout>

@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,13 +24,14 @@ public class CheckSignInStatus extends AppCompatActivity {
 
         try{ uid=FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-            DatabaseReference reference=FirebaseDatabase.getInstance().getReference("archievedprojects").child(uid);
-            DatabaseReference reference1=FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects");
+            DatabaseReference reference=FirebaseDatabase.getInstance().getReference("archievedprojects");
             reference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                        reference1.child(dataSnapshot1.child("projectId").getValue(String.class)).removeValue();
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                        String uid = dataSnapshot1.child("userId").getValue(String.class);
+                        String pid = dataSnapshot1.child("projectId").getValue(String.class);
+                        FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(pid).removeValue();
                     }
                 }
 
@@ -38,6 +40,7 @@ public class CheckSignInStatus extends AppCompatActivity {
 
                 }
             });
+
             DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference("users").child(uid);
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

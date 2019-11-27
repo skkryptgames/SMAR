@@ -38,6 +38,7 @@
             android:theme="@style/Theme.AppCompat.Light"   />
         <activity
             android:name=".TaskStatusUpdate"
+            android:windowSoftInputMode="stateVisible|adjustResize"
             android:theme="@style/Theme.AppCompat.Light"   />
 
         <activity android:name=".ClientPage" android:theme="@style/Theme.AppCompat.Light" />

@@ -41,6 +41,12 @@ public class NewProjectStartDateFragment extends Fragment {
          bundle1=getArguments();
 if(bundle1.getString("status").equals("create")){
         ((AdminPage)getActivity()).toolbarTitle.setText("Project Start Date");
+
+    Calendar calendar=Calendar.getInstance();
+    int thisYear = calendar.get(Calendar.YEAR);
+    int thisMonth = calendar.get(Calendar.MONTH);
+    int thisDay = calendar.get(Calendar.DAY_OF_MONTH);
+    startDate=monthFinder(thisMonth)+" "+thisDay+" "+thisYear;
        }
 if(bundle1.getString("status").equals("update")){
     ((AdminTasksPage)getActivity()).toolbarTitle.setText("Project Start Date");
@@ -61,6 +67,7 @@ if(bundle1.getString("status").equals("update")){
                 e.printStackTrace();
             }
             calendarView.setDate(f.getTimeInMillis());
+            startDate=date;
         }
 
         @Override
@@ -81,11 +88,7 @@ if(bundle1.getString("status").equals("update")){
         button=view.findViewById(R.id.smar_button_startdatenext);
         uid=bundle1.getString("userId");
 
-        Calendar calendar=Calendar.getInstance();
-        int thisYear = calendar.get(Calendar.YEAR);
-        int thisMonth = calendar.get(Calendar.MONTH);
-        int thisDay = calendar.get(Calendar.DAY_OF_MONTH);
-        startDate=monthFinder(thisMonth)+" "+thisDay+" "+thisYear;
+
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
