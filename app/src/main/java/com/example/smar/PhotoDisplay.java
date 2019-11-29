@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,22 +13,37 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,18 +54,21 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
+
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.michaelflisar.dragselectrecyclerview.DragSelectTouchListener;
+import com.michaelflisar.dragselectrecyclerview.DragSelectionProcessor;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,7 +77,6 @@ import static android.app.Activity.RESULT_OK;
 
 
 public class PhotoDisplay extends Fragment {
-
 
     static final int RC_PERMISSION_READ_EXTERNAL_STORAGE = 1;
     private static final int RC_SIGN_IN = 123;
@@ -99,12 +117,15 @@ public class PhotoDisplay extends Fragment {
 
     }
 
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.activity_image_display,container,false);
         mStorageRef = FirebaseStorage.getInstance().getReference();
         bundle=getArguments();
+            // default: false;
 
         counterText = view.findViewById(R.id.counterText);
         deleteselected = view.findViewById(R.id.deleteselected);
@@ -185,6 +206,7 @@ public class PhotoDisplay extends Fragment {
     }
 
 
+
     public class mViewHolder extends RecyclerView.ViewHolder {
 
         ImageView displayImage;
@@ -195,6 +217,7 @@ public class PhotoDisplay extends Fragment {
 
             displayImage = itemView.findViewById(R.id.imageDisplay);
             check = itemView.findViewById(R.id.check);
+
 
         }
     }
@@ -237,13 +260,11 @@ public class PhotoDisplay extends Fragment {
                 holder.check.setVisibility(View.GONE);
             } else {
                 holder.check.setVisibility(View.VISIBLE);
-            }*/
+         }*/
 
 
 
-
-
-            holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+           holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
@@ -253,7 +274,10 @@ public class PhotoDisplay extends Fragment {
                         compoundButton.setChecked(true);
                         del.add(pics.get(position).getKey());
                         counter++;
-                        counterText.setText(counter + " " + "Item(s) Selected");
+                        counterText.setText(counter + " " + "Item's Selected");
+                        ViewCompat.setScaleX(holder.displayImage, 0.9f);
+                        ViewCompat.setScaleY(holder.displayImage, 0.9f);
+
 
 
                     }
@@ -262,7 +286,12 @@ public class PhotoDisplay extends Fragment {
                         compoundButton.setChecked(false);
                         del.remove(pics.get(position).getKey());
                         counter--;
-                        counterText.setText(counter + " " + "Item(s) Selected");
+                        counterText.setText(counter + " " + "Item's Selected");
+                        ViewCompat.setScaleX(holder.displayImage, 1f);
+                        ViewCompat.setScaleY(holder.displayImage, 1f);
+
+
+
 
                     }
 
@@ -286,13 +315,19 @@ public class PhotoDisplay extends Fragment {
                 public boolean onLongClick(View view) {
                     relativeLayout.setVisibility(View.VISIBLE);
                     a=true;
-
                     notifyDataSetChanged();
+
+                   Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.anim_file);
+                    holder.displayImage.startAnimation(animation);
+
+
+                    holder.check.setChecked(true);
 
 
                     return false;
                 }
             });
+
 
         }
 
@@ -437,4 +472,5 @@ public class PhotoDisplay extends Fragment {
         }
 
 
-    }
+
+}
