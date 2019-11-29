@@ -33,7 +33,7 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 public class CreateNewProjectFragment extends Fragment {
 
     private Button button;
-    EditText pName,cName,pNumber;
+    EditText pName,cName,pNumber,countryCode;
     FirebaseAuth mAuth;
     String uid,key;
     int count=0;
@@ -45,43 +45,9 @@ public class CreateNewProjectFragment extends Fragment {
         pName=view.findViewById(R.id.smar_edittext_projectname);
         cName=view.findViewById(R.id.smar_edittext_clientname);
         pNumber=view.findViewById(R.id.smar_edittext_phonenumber);
+        countryCode=view.findViewById(R.id.smar_edittext_countrycode);
+
         mAuth=FirebaseAuth.getInstance();
-
-        pNumber.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-
-
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-                if(s.length()>0) {
-                    char a;
-                    a = s.charAt(0);
-                    if (a == '+') {
-                        pNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(13)});
-                        number = pNumber.getText().toString();
-
-
-                    } else {
-                        pNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
-                        number = pNumber.getText().toString();
-
-                    }
-                }
-
-            }
-        });
-
 
 
 
@@ -96,9 +62,8 @@ public class CreateNewProjectFragment extends Fragment {
                    
                 }
 
-                    if(number.length()>10){
-                        number=number.substring(3);
-                    }
+                    number=countryCode.getText().toString()+pNumber.getText().toString();
+
                 count=0;
 
 
@@ -112,43 +77,35 @@ public class CreateNewProjectFragment extends Fragment {
                             if (dataSnapshot1.child("projectName").getValue(String.class).equals(pName.getText().toString())) {
 
                                 Toast.makeText(getContext(), "Entered project name already exists", Toast.LENGTH_SHORT).show();
-                                count=count+1;}
+                                count=count+1;}}
+                        if(count==0){
 
-                            } if(count==0){
-                                String key = reference.push().getKey();
-                                HashMap<String, Object> map = new HashMap<>();
-                                map.put("projectName", pName.getText().toString());
-                                map.put("clientName", cName.getText().toString());
-                                map.put("clientNumber", number);
-                                map.put("projectId", key);
-                                map.put("userId",uid);
-                                map.put("progress",R.drawable.ic_panorama_fish_eye_black_24dp);
-                                map.put("thisWeekTasks","");
-                                reference.child(key).updateChildren(map);
 
-                                DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference("clients");
-                                HashMap<String,Object> map1=new HashMap<>();
-                                map1.put("projectId",key);
-                                map1.put("adminUid",uid);
-                                map1.put("projectName",pName.getText().toString());
+                                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("clients");
+                                HashMap<String, Object> map1 = new HashMap<>();
+                                map1.put("projectId", key);
+                                map1.put("adminUid", uid);
+                                map1.put("projectName", pName.getText().toString());
                                 databaseReference.child(number).updateChildren(map1);
 
-                                Fragment fragment=new NewProjectStartDateFragment();
-                                FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
+                                Fragment fragment = new NewProjectStartDateFragment();
+                                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                                 //fragmentTransaction.setCustomAnimations(R.anim.r2l_slide_in, R.anim.r2l_slide_out, R.anim.l2r_slide_in, R.anim.l2r_slide_out);
 
-                                Bundle bundle=new Bundle();
-                                bundle.putString("projectTitle",pName.getText().toString());
-                                bundle.putString("projectKey",key);
-                                bundle.putString("status","create");
-                                bundle.putString("userId",uid);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("projectTitle", pName.getText().toString());
+                                bundle.putString("projectKey", key);
+                                bundle.putString("status", "create");
+                                bundle.putString("userId", uid);
+                                bundle.putString("clientName", cName.getText().toString());
+                                bundle.putString("clientNumber", number);
                                 fragment.setArguments(bundle);
-                                fragmentTransaction.replace(R.id.fragment_container,fragment);
+                                fragmentTransaction.replace(R.id.fragment_container, fragment);
                                 fragmentTransaction.addToBackStack("hello");
                                 fragmentTransaction.commit();
 
+                            }
                         }
-                    }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -168,7 +125,6 @@ public class CreateNewProjectFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.create_new_project_layout,container,false);
         ((AdminPage)getActivity()).toolbarTitle.setText("Project SetUp");
-
 
         return view;
     }

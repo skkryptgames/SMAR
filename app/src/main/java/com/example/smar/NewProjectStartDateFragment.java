@@ -112,11 +112,13 @@ if(bundle1.getString("status").equals("update")){
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(bundle1.getString("status").equals("update")) {
 
-                DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(bundle1.getString("projectKey"));
-                HashMap<String,Object> map=new HashMap<>();
-                map.put("startDate",startDate);
-                reference.updateChildren(map);
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(bundle1.getString("projectKey"));
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("startDate", startDate);
+                    reference.updateChildren(map);
+                }
 
 
                 Fragment fragment=new NewProjectEndDateFragment();
@@ -128,6 +130,8 @@ if(bundle1.getString("status").equals("update")){
                 bundle.putString("projectStartDate",startDate);
                 bundle.putString("status",bundle1.getString("status"));
                 bundle.putString("userId",bundle1.getString("userId"));
+                bundle.putString("clientName",bundle1.getString("clientName"));
+                bundle.putString("clientNumber",bundle1.getString("clientNumber"));
 
                 fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.fragment_container,fragment);

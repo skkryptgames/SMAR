@@ -91,7 +91,7 @@ public class ClientPage extends AppCompatActivity {
 
         toolbarImage.setVisibility(View.GONE);
 
-        String number=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber().substring(3);
+        String number=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
 
         DatabaseReference reference=FirebaseDatabase.getInstance().getReference("clients").child(number);
         reference.addValueEventListener(new ValueEventListener() {

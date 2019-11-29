@@ -1,5 +1,6 @@
 package com.example.smar;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -86,10 +88,20 @@ public class NewProjectEndDateFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(bundle1.getString("projectKey"));
-                HashMap<String,Object> map=new HashMap<>();
-                map.put("endDate",endDate);
-                reference.updateChildren(map);
+                if(bundle1.getString("status").equals("update")) {
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(bundle1.getString("projectKey"));
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("endDate", endDate);
+                    reference.updateChildren(map);
+
+                    Intent intent=new Intent(getContext(),AdminPage.class);
+                    startActivity(intent);
+                    // ((AdminPage)getActivity()).mProjectListData.clear();
+                    // ((AdminPage)getActivity()).addData(pTitle,"This Week","Nov 01 2019");
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    for (int i = 0; i <= fm.getBackStackEntryCount(); i++) {
+                        fm.popBackStack();}
+                }
 
                 Fragment fragment=new NewProjectSelectModulesFragment();
                 FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
@@ -100,6 +112,9 @@ public class NewProjectEndDateFragment extends Fragment {
                 bundle.putString("projectStartDate",bundle1.getString("projectStartDate"));
                 bundle.putString("status",bundle1.getString("status"));
                 bundle.putString("userId",bundle1.getString("userId"));
+                bundle.putString("clientName",bundle1.getString("clientName"));
+                bundle.putString("clientNumber",bundle1.getString("clientNumber"));
+                bundle.putString("projectEndDate",endDate);
                 fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.fragment_container,fragment);
                 fragmentTransaction.addToBackStack(null);
