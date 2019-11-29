@@ -22,6 +22,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
     private Context context;
     PhotoFullScreenDialog photoFullScreenDialog;
     ClientPhotos clientPhotos;
+    boolean a=false;
 
 
 
@@ -45,6 +46,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
     public void onBindViewHolder(@NonNull PhotoAdapter.mViewHolder holder, int position) {
         AddPhotos addPhotos = (AddPhotos) pictures.get(position);
         Picasso.get().load(addPhotos.downloadUrl).placeholder(R.drawable.image_background).into(holder.displayImage);
+        holder.check.setVisibility(a ? View.VISIBLE : View.GONE);
 
 
         holder.displayImage.setOnClickListener(new View.OnClickListener() {
@@ -79,12 +81,14 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.mViewHolder>
     public static class mViewHolder extends RecyclerView.ViewHolder {
 
         ImageView displayImage;
+        CheckBox check;
 
 
         public mViewHolder(@NonNull View itemView) {
             super(itemView);
 
             displayImage = itemView.findViewById(R.id.imageDisplay);
+            check = itemView.findViewById(R.id.check);
         }
     }
 
