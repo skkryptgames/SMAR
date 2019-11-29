@@ -40,7 +40,7 @@
             android:id="@+id/deleteselected"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="10dp"
-            android:background="@drawable/rubbish"
+            android:background="@drawable/ic_rubbish"
             >
 
         </ImageButton>

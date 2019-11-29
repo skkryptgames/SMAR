@@ -9,6 +9,9 @@ public class AddPhotos {
     public String key;
     public String userId;
     public String downloadUrl;
+    boolean selected;
+
+
 
     // these properties will not be saved to the database
     @Exclude
@@ -32,7 +35,9 @@ public class AddPhotos {
         return downloadUrl;
     }
 
-
+    public DBUser getDbUser() {
+        return dbUser;
+    }
 
     public AddPhotos(String key, String userId, String downloadUrl) {
         this.key = key;
@@ -44,4 +49,12 @@ public class AddPhotos {
     }
 
 
+    public boolean isSelected() {
+
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 }
