@@ -98,6 +98,14 @@ public class NewProjectSelectModulesFragment extends Fragment {
                         projectDetails.put("thisWeekTasks","");
                         projectDetails.put("userId",uid);
                         reference.child(projectKey).updateChildren(projectDetails);
+
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("clients");
+                        HashMap<String, Object> map1 = new HashMap<>();
+                        map1.put("projectId", projectKey);
+                        map1.put("adminUid", uid);
+                        map1.put("projectName", bundle1.getString("projectTitle"));
+                        databaseReference.child(bundle1.getString("clientNumber")).updateChildren(map1);
+
                         reference3=reference.child(projectKey).child("tasks");
                     for(ModulesPojo model:modulesList){
                         if(model.isSelected()){

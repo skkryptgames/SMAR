@@ -81,12 +81,7 @@ public class CreateNewProjectFragment extends Fragment {
                         if(count==0){
 
 
-                                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("clients");
-                                HashMap<String, Object> map1 = new HashMap<>();
-                                map1.put("projectId", key);
-                                map1.put("adminUid", uid);
-                                map1.put("projectName", pName.getText().toString());
-                                databaseReference.child(number).updateChildren(map1);
+
 
                                 Fragment fragment = new NewProjectStartDateFragment();
                                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
