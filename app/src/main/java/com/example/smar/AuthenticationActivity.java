@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 public class AuthenticationActivity extends AppCompatActivity {
 
-    private EditText phoneEnter;
+    private EditText phoneEnter,countryCode;
     private EditText otpEnter;
     private Button requestOtp;
     private TextView otp, phoneNumber;
@@ -58,36 +58,13 @@ public class AuthenticationActivity extends AppCompatActivity {
         otp = findViewById(R.id.otp);
         phoneNumber = findViewById(R.id.phoneNumber);
         progressBar=findViewById(R.id.smar_progressbar);
+        countryCode=findViewById(R.id.countrycode);
 
         mAuth = FirebaseAuth.getInstance();
 
         phoneEnter = (EditText) findViewById(R.id.phoneEnter);
 
-        phoneEnter.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-                if(editable.length()>0){
-                    if(editable.charAt(0)=='+'){
-                        phoneEnter.setFilters(new InputFilter[]{new InputFilter.LengthFilter(13)});
-                    }
-                    else {
-                        phoneEnter.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
-                    }
-                }
-
-            }
-        });
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
@@ -135,25 +112,21 @@ public class AuthenticationActivity extends AppCompatActivity {
 
 
 
-                userNumber = phoneEnter.getText().toString();
-                if(userNumber.length()>10) {
+                userNumber = countryCode.getText().toString()+phoneEnter.getText().toString();
 
-                    PhoneAuthProvider.getInstance().verifyPhoneNumber(userNumber, 60, TimeUnit.SECONDS, AuthenticationActivity.this, mCallbacks);
-
-                    phoneEnter.setText(""+userNumber);
-                    phoneEnter.setEnabled(false);
-
-                }
-                else if(userNumber.length()==10){
-                    String number = "+" + "91" + userNumber;
-                    PhoneAuthProvider.getInstance().verifyPhoneNumber(number, 60, TimeUnit.SECONDS, AuthenticationActivity.this, mCallbacks);
-
-                    phoneEnter.setFilters(new InputFilter[]{new InputFilter.LengthFilter(13)});
-                    phoneEnter.setText("+91" + userNumber);
-                    phoneEnter.setEnabled(false);
-                }else {
+                if(phoneEnter.getText().toString().length()<10) {
                     Toast.makeText(getApplicationContext(),"please enter valid number",Toast.LENGTH_SHORT).show();
                     phoneEnter.setEnabled(true);
+                }else {
+
+
+                        PhoneAuthProvider.getInstance().verifyPhoneNumber(userNumber, 60, TimeUnit.SECONDS, AuthenticationActivity.this, mCallbacks);
+
+                        phoneEnter.setText(phoneEnter.getText().toString());
+                        countryCode.setEnabled(false);
+                        phoneEnter.setEnabled(false);
+
+
                 }
 
 

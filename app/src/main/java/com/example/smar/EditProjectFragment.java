@@ -30,7 +30,7 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 public class EditProjectFragment extends Fragment {
     String uid,pid;
     String projectName,clientName,clientNumber;
-    EditText pName,cName,cNumber;
+    EditText pName,cName,cNumber,countryCode;
     Button button;
     String number;
 
@@ -43,6 +43,8 @@ public class EditProjectFragment extends Fragment {
         pName=view.findViewById(R.id.smar_edittext_projectname);
         cName=view.findViewById(R.id.smar_edittext_clientname);
         cNumber=view.findViewById(R.id.smar_edittext_phonenumber);
+        countryCode=view.findViewById(R.id.smar_edittext_countrycode);
+        countryCode.setVisibility(View.GONE);
 
         Bundle bundle=getArguments();
 
@@ -57,6 +59,7 @@ public class EditProjectFragment extends Fragment {
                 clientNumber=dataSnapshot.child("clientNumber").getValue(String.class);
                 pName.setText(projectName);
                 cName.setText(clientName);
+                cNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(clientNumber.length())});
                 cNumber.setText(clientNumber);
             }
 
@@ -75,42 +78,6 @@ public class EditProjectFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-
-        cNumber.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-
-
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-                if(s.length()>0) {
-                    char a;
-                    a = s.charAt(0);
-                    if (a == '+') {
-                        cNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(13)});
-                        number = cNumber.getText().toString();
-
-
-                    } else {
-                        cNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
-                        number = cNumber.getText().toString();
-
-                    }
-                }
-
-            }
-        });
-
         button=view.findViewById(R.id.smar_button_newprojectnext);
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -126,10 +93,7 @@ public class EditProjectFragment extends Fragment {
                     HashMap<String, Object> a = new HashMap<>();
                     a.put("projectName", pName.getText().toString());
                     a.put("clientName", cName.getText().toString());
-                    if(number.length()>10){
-                        number=number.substring(3);
-                    }
-                    a.put("clientNumber", number);
+                    a.put("clientNumber",cNumber.getText().toString());
 
                     FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(pid).updateChildren(a);
 

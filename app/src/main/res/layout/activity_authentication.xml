@@ -15,31 +15,43 @@
         android:text="Phone Number"
         android:textColor="@color/blue"
         android:textSize="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.177"
-        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintStart_toStartOf="@+id/countrycode"
         app:layout_constraintTop_toTopOf="parent">
 
     </TextView>
 
     <EditText
-        android:id="@+id/phoneEnter"
-        android:layout_width="match_parent"
+        android:id="@+id/countrycode"
+        android:layout_width="48dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginLeft="45dp"
         android:layout_marginTop="15dp"
-        android:layout_marginEnd="45dp"
-        android:layout_marginRight="45dp"
+
         android:background="@drawable/editext_frame"
-        android:hint="Phone Number"
+        android:text="+91"
         android:inputType="number|phone"
         android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/phoneNumber" />
 
+
+    <EditText
+        android:id="@+id/phoneEnter"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/editext_frame"
+        android:hint="Phone Number"
+        android:maxLength="10"
+        android:inputType="number|phone"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/countrycode"
+        app:layout_constraintTop_toBottomOf="@+id/phoneNumber" />
 
     <TextView
         android:id="@+id/otp"

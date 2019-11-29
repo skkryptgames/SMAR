@@ -53,6 +53,7 @@ public class AdminPage extends AppCompatActivity {
 
         } else {
             super.onBackPressed();
+            toolbarTitle.setText("smartnest");
             signOut.setImageResource(R.drawable.signout_demo);
         }
 

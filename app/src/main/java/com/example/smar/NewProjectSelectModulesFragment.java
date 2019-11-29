@@ -61,6 +61,7 @@ public class NewProjectSelectModulesFragment extends Fragment {
     Bundle bundle1;
     DatabaseReference reference3;
     RecyclerViewAdapter adapter;
+    String projectKey;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -82,10 +83,23 @@ public class NewProjectSelectModulesFragment extends Fragment {
                     fm.popBackStack();}
 
 
-                    DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(bundle1.getString("projectKey"));
-                    reference3=reference.child("tasks");
+                    DatabaseReference reference= FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects");
+
                     if(bundle1.getString("status").equals("create")){
-                        for(ModulesPojo model:modulesList){
+                         projectKey=reference.push().getKey();
+                        HashMap<String,Object> projectDetails=new HashMap<>();
+                        projectDetails.put("clientName",bundle1.getString("clientName"));
+                        projectDetails.put("clientNumber",bundle1.getString("clientNumber"));
+                        projectDetails.put("endDate",bundle1.getString("projectEndDate"));
+                        projectDetails.put("progress",R.drawable.ic_panorama_fish_eye_black_24dp);
+                        projectDetails.put("projectId",projectKey);
+                        projectDetails.put("projectName",bundle1.getString("projectTitle"));
+                        projectDetails.put("startDate",bundle1.getString("projectStartDate"));
+                        projectDetails.put("thisWeekTasks","");
+                        projectDetails.put("userId",uid);
+                        reference.child(projectKey).updateChildren(projectDetails);
+                        reference3=reference.child(projectKey).child("tasks");
+                    for(ModulesPojo model:modulesList){
                         if(model.isSelected()){
                             String key=reference3.push().getKey();
                             HashMap<String,Object> map=new HashMap<>();
@@ -98,10 +112,11 @@ public class NewProjectSelectModulesFragment extends Fragment {
                             reference3.child(key).updateChildren(map);
                         }
                     }}if(bundle1.getString("status").equals("update")){
-                        reference3.removeValue();
+                        DatabaseReference reference1=FirebaseDatabase.getInstance().getReference("users").child(bundle1.getString("userId")).child("projects").child(bundle1.getString("projectKey"));
+                        reference1.child("tasks").removeValue();
                     for(ModulesPojo model:modulesList){
                         if(model.isSelected()){
-                            String key=reference3.push().getKey();
+                            String key=reference1.push().getKey();
                             HashMap<String,Object> map=new HashMap<>();
                             map.put("taskId",key);
                             map.put("taskName",model.getName());
@@ -109,7 +124,7 @@ public class NewProjectSelectModulesFragment extends Fragment {
                             map.put("startDate",model.getStartDate());
                             map.put("numOfDays",model.getNumOfDays());
                             map.put("progress",R.drawable.ic_panorama_fish_eye_black_24dp);
-                            reference3.child(key).updateChildren(map);
+                            reference1.child("tasks").child(key).updateChildren(map);
                         }
                     }
 
@@ -309,32 +324,64 @@ public class NewProjectSelectModulesFragment extends Fragment {
 
     public void tasksToBeDoneThisWeek(){
         String a="";
-        final DatabaseReference reference1= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(bundle1.getString("projectKey"));
-        Calendar calendar=Calendar.getInstance();
-        reference3.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String b="";
-                for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                    String date=dataSnapshot1.child("startDate").getValue(String.class);
-                    if(checkDateInThisWeek(date)){
+        if(bundle1.getString("status").equals("create")) {
+            final DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(projectKey);
 
-                        b=b+", "+dataSnapshot1.child("taskName").getValue(String.class);
+            Calendar calendar = Calendar.getInstance();
+            reference1.child("tasks").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String b = "";
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                        String date = dataSnapshot1.child("startDate").getValue(String.class);
+                        if (checkDateInThisWeek(date)) {
 
+                            b = b + ", " + dataSnapshot1.child("taskName").getValue(String.class);
+
+                        }
                     }
+                    b = b.replaceFirst("(?:, )+", "");
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("thisWeekTasks", b);
+                    reference1.updateChildren(map);
                 }
-                b=b.replaceFirst("(?:, )+","");
-                HashMap<String,Object> map=new HashMap<>();
-                map.put("thisWeekTasks",b);
-                reference1.updateChildren(map);
-            }
 
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
+        if(bundle1.getString("status").equals("update")) {
+            final DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects").child(bundle1.getString("projectKey"));
+
+            Calendar calendar = Calendar.getInstance();
+            reference1.child("tasks").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String b = "";
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                        String date = dataSnapshot1.child("startDate").getValue(String.class);
+                        if (checkDateInThisWeek(date)) {
+
+                            b = b + ", " + dataSnapshot1.child("taskName").getValue(String.class);
+
+                        }
+                    }
+                    b = b.replaceFirst("(?:, )+", "");
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("thisWeekTasks", b);
+                    reference1.updateChildren(map);
+                }
+
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
     public boolean checkDateInThisWeek(String date){
         Date date2= new Date();
