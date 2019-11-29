@@ -64,8 +64,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.michaelflisar.dragselectrecyclerview.DragSelectTouchListener;
-import com.michaelflisar.dragselectrecyclerview.DragSelectionProcessor;
+
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -317,8 +316,6 @@ public class PhotoDisplay extends Fragment {
                     a=true;
                     notifyDataSetChanged();
 
-                   Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.anim_file);
-                    holder.displayImage.startAnimation(animation);
 
 
                     holder.check.setChecked(true);
