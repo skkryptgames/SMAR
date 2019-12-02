@@ -18,14 +18,14 @@
         android:id="@+id/smar_textview_appname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="smartnest"
+        android:text="@string/splashscreen_textview_smartnest"
         android:textColor="#ffbd4a"
         android:fontFamily="@font/ubuntumedium"
         android:textSize="48sp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="interiors"
+        android:text="@string/splashscreen_textview_interiors"
         android:layout_centerHorizontal="true"
         android:fontFamily="@font/ubuntumedium"
         android:textColor="#d9d9d9"

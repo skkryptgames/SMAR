@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -139,7 +140,7 @@ public class AdminMessageActivity extends Fragment {
     private void readMessages() {
 
         ref = FirebaseDatabase.getInstance().getReference("users").child(userId).child("projects").child(pId).child("tasks").child(taskId).child("comments");
-        ref.addValueEventListener(new ValueEventListener() {
+        /*ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 messages.clear();
@@ -155,6 +156,42 @@ public class AdminMessageActivity extends Fragment {
                     recyler_chat.scrollToPosition(messages.size()-1);
                 }
 
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });*/
+
+
+        ref.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String sender=dataSnapshot.child("sender").getValue(String.class);
+                String message=dataSnapshot.child("message").getValue(String.class);
+                String userId=dataSnapshot.child("userType").getValue(String.class);
+                ChatMessage chatMessage=new ChatMessage(message,sender,userId);
+                messages.add(chatMessage);
+                mAdapter.notifyDataSetChanged();
+                recyler_chat.scrollToPosition(messages.size()-1);
+
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
             }
 

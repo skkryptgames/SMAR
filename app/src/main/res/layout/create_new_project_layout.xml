@@ -4,13 +4,14 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:clickable="true">
 
     <TextView
         android:id="@+id/smar_textview_createnewproject"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create a new project"
+        android:text="@string/createproject_textview_createnewproject"
         android:layout_marginTop="40dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="20dp"
@@ -35,7 +36,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="28dp"
     android:layout_marginStart="20dp"
-    android:text="Project Name"
+    android:text="@string/createproject_textview_projectname"
     android:textSize="12sp"
         android:textColor="@color/blue"/>
     <EditText
@@ -43,6 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/smar_textview_projectname"
+        android:inputType="textCapSentences"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginTop="8dp"
@@ -57,7 +59,7 @@
         android:layout_below="@+id/smar_edittext_projectname"
         android:layout_marginTop="28dp"
         android:layout_marginStart="20dp"
-        android:text="Client Name"
+        android:text="@string/createproject_textview_clientname"
         android:textSize="12sp"
         android:textColor="@color/blue"/>
     <EditText
@@ -65,6 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/smar_textview_clientname"
+        android:inputType="textCapSentences"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginTop="8dp"
@@ -80,7 +83,7 @@
         android:layout_below="@+id/smar_edittext_clientname"
         android:layout_marginTop="28dp"
         android:layout_marginStart="20dp"
-        android:text="Phone Number"
+        android:text="@string/createproject_textview_phonenumber"
         android:textSize="12sp"
         android:textColor="@color/blue"/>
 
@@ -95,7 +98,7 @@
             style="@style/Widget.AppCompat.EditText"
             android:maxLength="4"
             android:layout_marginEnd="-16dp"
-            android:text="+91"
+            android:text="@string/default_countrycode"
             android:textColor="@color/black"
             android:inputType="phone"
             android:layout_marginTop="8dp"
@@ -132,7 +135,8 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         app:cornerRadius="20dp"
-        android:text="Next"
+        android:text="@string/createproject_button_next"
+        android:textAllCaps="false"
         android:paddingTop="-20dp"
         android:textColor="@color/white"
         android:gravity="center"
