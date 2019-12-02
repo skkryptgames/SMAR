@@ -15,6 +15,7 @@ import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 
 import android.content.pm.PackageManager;
@@ -27,6 +28,7 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
+import android.provider.ContactsContract;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -102,7 +104,8 @@ public class PhotoDisplay extends Fragment {
     private static Toolbar toolbarDelete;
     ArrayList<String> del = new ArrayList<>();
     private PhotoDisplay mActivity;
-    boolean a = false;
+    boolean a = false, b=false;
+
 
     public static Fragment newInstance() {
 
@@ -163,6 +166,8 @@ public class PhotoDisplay extends Fragment {
                 }
                 a=false;
                 relativeLayout.setVisibility(View.GONE);
+                b=true;
+                mAdapter.notifyDataSetChanged();
 
             }
         });
@@ -210,12 +215,16 @@ public class PhotoDisplay extends Fragment {
 
         ImageView displayImage;
         CheckBox check;
+        View view;
+
 
         public mViewHolder(@NonNull View itemView) {
             super(itemView);
 
             displayImage = itemView.findViewById(R.id.imageDisplay);
             check = itemView.findViewById(R.id.check);
+            view = itemView.findViewById(R.id.view);
+
 
 
         }
@@ -228,8 +237,7 @@ public class PhotoDisplay extends Fragment {
         private ArrayList<AddPhotos> pics;
         private PhotoDisplay mActivity;
         PhotoFullScreenDialog photoFullScreenDialog;
-
-
+        Context context;
 
 
         public PhotoAdapter(PhotoDisplay mActivity, ArrayList<AddPhotos> pics) {
@@ -253,6 +261,8 @@ public class PhotoDisplay extends Fragment {
             AddPhotos addPhotos = (AddPhotos) pics.get(position);
             Picasso.get().load(addPhotos.downloadUrl).placeholder(R.drawable.image_background).into(holder.displayImage);
             holder.check.setVisibility(a ? View.VISIBLE : View.GONE);
+            if (b)
+            holder.displayImage.setPadding( 0,0,0,0);
 
 
             /*if (pics.get(position).getA()==0) {
@@ -261,36 +271,36 @@ public class PhotoDisplay extends Fragment {
                 holder.check.setVisibility(View.VISIBLE);
          }*/
 
-
-
-           holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-                    if(compoundButton.isChecked())
-                    {
+                    if (compoundButton.isChecked()) {
 
                         compoundButton.setChecked(true);
                         del.add(pics.get(position).getKey());
                         counter++;
                         counterText.setText(counter + " " + "Item's Selected");
-                        ViewCompat.setScaleX(holder.displayImage, 0.9f);
-                        ViewCompat.setScaleY(holder.displayImage, 0.9f);
+                        //ViewCompat.setScaleX(holder.displayImage, 0.9f);
+                        //ViewCompat.setScaleY(holder.displayImage, 0.9f);
+
+                        holder.displayImage.setPadding(20, 20, 20, 20);
 
 
 
-                    }
-                    else
-                    {
+
+
+
+
+                    } else {
                         compoundButton.setChecked(false);
                         del.remove(pics.get(position).getKey());
                         counter--;
                         counterText.setText(counter + " " + "Item's Selected");
-                        ViewCompat.setScaleX(holder.displayImage, 1f);
-                        ViewCompat.setScaleY(holder.displayImage, 1f);
-
-
-
+                        //ViewCompat.setScaleX(holder.displayImage, 1f);
+                        //ViewCompat.setScaleY(holder.displayImage, 1f);
+                        //notifyItemRangeRemoved(position, getItemCount());
+                        holder.displayImage.setPadding(0, 0, 0, 0);
 
                     }
 
@@ -316,9 +326,12 @@ public class PhotoDisplay extends Fragment {
                     a=true;
                     notifyDataSetChanged();
 
-
+                    //holder.displayImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                   holder.displayImage.setPadding(20, 20, 20, 20);
 
                     holder.check.setChecked(true);
+
+
 
 
                     return false;
@@ -338,6 +351,8 @@ public class PhotoDisplay extends Fragment {
             notifyDataSetChanged();
         }
     }
+
+
 
     public void uploadImage(View view) {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
