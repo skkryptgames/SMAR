@@ -13,7 +13,7 @@
         android:id="@+id/ruler"
         android:layout_height="48dp"
         android:src="@drawable/ic_023_tools"
-        android:layout_weight="0.7">
+        android:layout_weight="0.3">
 
     </ImageView>
 
@@ -29,7 +29,7 @@
             android:layout_height="match_parent"
             android:id="@+id/design"
             android:text="Design"
-            android:textSize="17dp"
+            android:textSize="17sp"
             android:textColor="@color/blue">
 
         </TextView>
@@ -39,15 +39,16 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Target Date "
-                android:textSize="17dp"/>
+                android:text=""
+                android:textSize="17sp"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/targetDate"
+            android:layout_marginTop="4dp"
             android:text="Oct 31 2019"
-            android:textSize="17dp">
+            android:textSize="15sp">
 
         </TextView>
         </LinearLayout>
@@ -61,7 +62,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="0.7"
+        android:layout_weight="0.3"
         android:layout_gravity="center"
         android:id="@+id/panorama"
         android:src="@drawable/ic_panorama_fish_eye_black_24dp"

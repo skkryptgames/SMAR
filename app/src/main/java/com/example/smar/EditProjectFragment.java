@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -31,8 +33,9 @@ public class EditProjectFragment extends Fragment {
     String uid,pid;
     String projectName,clientName,clientNumber;
     EditText pName,cName,cNumber,countryCode;
+    TextView createProject;
     Button button;
-    String number;
+    String pNumber;
 
 
     @Nullable
@@ -45,6 +48,8 @@ public class EditProjectFragment extends Fragment {
         cNumber=view.findViewById(R.id.smar_edittext_phonenumber);
         countryCode=view.findViewById(R.id.smar_edittext_countrycode);
         countryCode.setVisibility(View.GONE);
+        createProject=view.findViewById(R.id.smar_textview_createnewproject);
+        createProject.setText("Edit Project");
 
         Bundle bundle=getArguments();
 
@@ -59,8 +64,9 @@ public class EditProjectFragment extends Fragment {
                 clientNumber=dataSnapshot.child("clientNumber").getValue(String.class);
                 pName.setText(projectName);
                 cName.setText(clientName);
-                cNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(clientNumber.length())});
+                cNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(14)});
                 cNumber.setText(clientNumber);
+
             }
 
             @Override
@@ -94,6 +100,17 @@ public class EditProjectFragment extends Fragment {
                     a.put("projectName", pName.getText().toString());
                     a.put("clientName", cName.getText().toString());
                     a.put("clientNumber",cNumber.getText().toString());
+
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("clients");
+                    if(!clientNumber.equals(cNumber.getText().toString())){
+
+                        databaseReference.child(clientNumber).removeValue();
+                    }
+                    HashMap<String, Object> map1 = new HashMap<>();
+                    map1.put("projectId", pid);
+                    map1.put("adminUid", uid);
+                    map1.put("projectName", pName.getText().toString());
+                    databaseReference.child(cNumber.getText().toString()).updateChildren(map1);
 
                     FirebaseDatabase.getInstance().getReference("users").child(uid).child("projects").child(pid).updateChildren(a);
 

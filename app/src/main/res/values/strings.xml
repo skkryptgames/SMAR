@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">SmartNest</string>
+    <string name="chat_edittext_entermessage">Enter message</string>
+    <string name="projects_button_addnewproject">Add New Project</string>
+    <string name="authentication_edittext_phonenumber">Phone Number</string>
+    <string name="authentication_edittext_enterotp">Enter OTP</string>
+    <string name="authentication_button_requestotp">Request OTP</string>
+    <string name="authentication_edittext_countrycode">+91</string>
+    <string name="photos_button_addnewphoto">Add New Photo</string>
+    <string name="photos_itemsselected">0 item\'s selected</string>
+    <string name="createproject_textview_createnewproject">Create a new project</string>
+    <string name="createproject_textview_projectname">Project Name</string>
+    <string name="createproject_textview_clientname">Client Name</string>
+    <string name="createproject_textview_phonenumber">Phone Number</string>
+    <string name="createproject_button_next">Next</string>
+    <string name="createproject_button_done">Done</string>
+    <string name="splashscreen_textview_smartnest">smartnest</string>
+    <string name="splashscreen_textview_interiors">interiors</string>
+    <string name="taskstatus_button_save">Save</string>
+    <string name="taskstatus_textview_comments">comments</string>
+    <string name="taskstatus_textview_added">added</string>
+    <string name="taskstatus_textview_updatestatus">Update Status</string>
+    <string name="taskstatus_textview_notstarted">Not Started</string>
+    <string name="taskstatus_textview_inprogress">In Progress</string>
+    <string name="taskstatus_textview_delayed">Delayed</string>
+    <string name="taskstatus_textview_completed">Completed</string>
+    <string name="default_countrycode">+91</string>
+
+
 </resources>

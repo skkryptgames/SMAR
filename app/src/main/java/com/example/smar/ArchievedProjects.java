@@ -60,7 +60,7 @@ public class ArchievedProjects extends AppCompatActivity {
 
         toolbar=getActionBar();
         toolbarTitle=findViewById(R.id.smar_toolbar_title);
-        toolbarTitle.setText("Archieved Projects");
+        toolbarTitle.setText("Archived Projects");
         toolbarImage=findViewById(R.id.smar_toolbar_image);
         this.getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.toolbar_background));
         toolbarImage.setImageResource(R.drawable.ic_home);

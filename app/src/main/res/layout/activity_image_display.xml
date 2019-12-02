@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     tools:context=".PhotoDisplay"
-    android:id="@+id/fragment_container">
+    android:id="@+id/fragment_container"
+    android:clickable="true">
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
@@ -70,7 +71,8 @@
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
         android:layout_marginBottom="40dp"
-        android:text="Add New Photo"
+        android:textAllCaps="false"
+        android:text="@string/photos_button_addnewphoto"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

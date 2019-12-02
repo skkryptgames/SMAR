@@ -25,7 +25,7 @@
         </activity>
         <activity android:name=".CheckSignInStatus" android:theme="@style/NoActionBar"/>
         <activity android:name=".ArchievedProjects" android:theme="@style/Theme.AppCompat.Light"/>
-        <activity android:name=".AuthenticationActivity"/>
+        <activity android:name=".AuthenticationActivity" android:noHistory="true"/>
         <activity
             android:name=".AdminPage"
             android:theme="@style/Theme.AppCompat.Light"   />
@@ -39,7 +39,8 @@
         <activity
             android:name=".TaskStatusUpdate"
             android:windowSoftInputMode="stateVisible|adjustResize"
-            android:theme="@style/Theme.AppCompat.Light"   />
+            android:theme="@style/Theme.AppCompat.Light"
+            android:screenOrientation="portrait"/>
 
         <activity android:name=".ClientPage" android:theme="@style/Theme.AppCompat.Light" />
 

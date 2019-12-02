@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ClientPage"
     android:background="@color/white"
+    android:clickable="true"
     android:id="@+id/fragment_container">
 
 
