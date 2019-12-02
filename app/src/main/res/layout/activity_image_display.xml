@@ -71,7 +71,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
-        android:layout_marginBottom="40dp"
         android:textAllCaps="false"
         android:text="@string/photos_button_addnewphoto"
         android:layout_marginBottom="10dp"
